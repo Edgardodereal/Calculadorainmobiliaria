@@ -17,13 +17,13 @@
       font-size: 0.92rem; transition: all 0.2s; background: #f8fafc;
     }
     .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
-      outline: none; border-color: #3b82f6; background: white; box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+      outline: none; border-color: #30643E; background: white; box-shadow: 0 0 0 3px rgba(48,100,62,0.18);
     }
     .btn-primary {
-      background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; font-weight: 600;
+      background: linear-gradient(135deg, #30643E, #28412E); color: white; font-weight: 600;
       padding: 0.7rem 1.4rem; border-radius: 0.65rem; transition: all 0.2s;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.35); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(48,100,62,0.35); }
     .btn-secondary {
       background: #f1f5f9; color: #334155; font-weight: 600; padding: 0.7rem 1.4rem;
       border-radius: 0.65rem; transition: all 0.2s;
@@ -35,15 +35,15 @@
     }
     .chart-container { position: relative; height: 240px; }
     .tab-btn { padding: 0.55rem 1.1rem; border-radius: 0.55rem; font-weight: 600; font-size: 0.88rem; transition: all 0.2s; }
-    .tab-btn.active { background: #3b82f6; color: white; }
+    .tab-btn.active { background: #30643E; color: white; }
     .tab-btn:not(.active) { background: #f1f5f9; color: #64748b; }
     .tab-btn:not(.active):hover { background: #e2e8f0; }
     .mode-btn { padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 700; font-size: 0.95rem; transition: all 0.2s; border: 2px solid transparent; }
-    .mode-btn.active-buyer { background: #eff6ff; color: #1d4ed8; border-color: #3b82f6; }
+    .mode-btn.active-buyer { background: #f0f7f2; color: #28412E; border-color: #30643E; }
     .mode-btn.active-seller { background: #f0fdf4; color: #15803d; border-color: #22c55e; }
     .mode-btn:not(.active-buyer):not(.active-seller) { background: #f8fafc; color: #64748b; }
     .diagnosis-box {
-      background: linear-gradient(135deg, #eff6ff, #f0f9ff); border-left: 5px solid #3b82f6;
+      background: linear-gradient(135deg, #f0f7f2, #e8f5ec); border-left: 5px solid #30643E;
       border-radius: 0.8rem; padding: 1.4rem;
     }
     .positive { color: #059669; }
@@ -60,13 +60,22 @@
       position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
       background-color: white; transition: .3s; border-radius: 50%;
     }
-    input:checked + .slider { background-color: #3b82f6; }
+    input:checked + .slider { background-color: #30643E; }
     input:checked + .slider:before { transform: translateX(22px); }
     @media print {
       .no-print { display: none !important; }
       body { background: white; }
       .card { box-shadow: none; border: 1px solid #e2e8f0; }
     }
+  
+    .bg-salo { background-color: #30643E !important; }
+    .bg-salo-light { background-color: #e8f5ec !important; }
+    .text-salo { color: #30643E !important; }
+    .text-salo-dark { color: #28412E !important; }
+    .border-salo-border { border-color: #c5d9cb !important; }
+    .border-l-salo { border-left-color: #30643E !important; }
+    .mode-btn.active-buyer { background: #f0f7f2; color: #28412E; border-color: #30643E; }
+
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -74,10 +83,11 @@
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white text-lg">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg" style="background:#30643E;">
           <i class="fas fa-home"></i>
         </div>
         <div>
+          <p class="text-xs font-semibold tracking-wide uppercase" style="color:#30643E;">Edgardo de Real</p>
           <h1 class="text-lg font-bold text-slate-800 leading-tight">Calculadora Inmobiliaria</h1>
           <p class="text-xs text-slate-500">Proforma Comprador · Net Sheet Vendedor</p>
         </div>
@@ -98,7 +108,7 @@
     <div class="card p-5 mb-6 no-print">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 class="section-title mb-1"><i class="fas fa-users text-blue-500"></i> ¿Quién eres?</h2>
+          <h2 class="section-title mb-1"><i class="fas fa-users text-salo"></i> ¿Quién eres?</h2>
           <p class="text-sm text-slate-500">Elige el perfil para ver solo los cálculos que te corresponden</p>
         </div>
         <div class="flex flex-wrap gap-3">
@@ -120,7 +130,7 @@
         <div id="panel-comprador-inputs">
 
           <div class="card p-5 mb-5">
-            <h2 class="section-title mb-4"><i class="fas fa-building text-blue-500"></i> Datos de la propiedad</h2>
+            <h2 class="section-title mb-4"><i class="fas fa-building text-salo"></i> Datos de la propiedad</h2>
             <div class="space-y-3">
               <div class="input-group">
                 <label>Precio de compra / valor (MXN)</label>
@@ -159,7 +169,7 @@
           </div>
 
           <div class="card p-5 mb-5">
-            <h2 class="section-title mb-4"><i class="fas fa-home text-indigo-500"></i> Uso final de la propiedad</h2>
+            <h2 class="section-title mb-4"><i class="fas fa-home text-salo"></i> Uso final de la propiedad</h2>
             <div class="flex flex-wrap gap-2 mb-4">
               <button id="uso-vivir" class="tab-btn active" onclick="setUso('vivir')">Vivir / Habitar</button>
               <button id="uso-rentar" class="tab-btn" onclick="setUso('rentar')">Comprar para rentar</button>
@@ -214,7 +224,7 @@
                 <label>Predial + seguro anual (MXN)</label>
                 <input type="number" id="c-predialSeguro" value="18000" min="0" step="500" oninput="calcular()" />
               </div>
-              <p class="text-xs text-slate-500 bg-blue-50 rounded-lg p-2">
+              <p class="text-xs text-slate-500 bg-salo-light rounded-lg p-2">
                 Al habitar solo se proyecta la <strong>plusvalía</strong> del inmueble y los costos de mantenimiento.
               </p>
             </div>
@@ -222,7 +232,7 @@
 
           <div class="card p-5 mb-5">
             <div class="flex items-center justify-between mb-4">
-              <h2 class="section-title"><i class="fas fa-calendar-check text-amber-500"></i> ¿Es preventa?</h2>
+              <h2 class="section-title"><i class="fas fa-calendar-check text-salo"></i> ¿Es preventa?</h2>
               <label class="toggle-switch">
                 <input type="checkbox" id="c-esPreventa" onchange="togglePreventa(); calcular()" />
                 <span class="slider"></span>
@@ -295,24 +305,21 @@
           </div>
 
           <div class="card p-5">
-            <h2 class="section-title mb-4"><i class="fas fa-file-invoice-dollar text-blue-500"></i> Costos de cierre (comprador)</h2>
-            <div class="space-y-3">
-              <div class="input-group">
-                <label>ISAI estimado (se calcula por estado, editable)</label>
-                <input type="number" id="c-isai" value="0" min="0" step="1000" oninput="calcular()" />
+            <h2 class="section-title mb-4"><i class="fas fa-file-invoice-dollar text-salo"></i> Costos de cierre (comprador)</h2>
+            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+              <p class="text-sm text-slate-700 leading-relaxed">
+                Los <strong>costos totales de cierre</strong> del comprador rondan el <strong class="text-salo">7%</strong> del precio de compra.
+              </p>
+              <p class="text-xs text-slate-500 mt-2">
+                Ese 7% cubre de forma integral: ISAI (impuesto sobre adquisición), honorarios notariales + IVA, avalúo, inscripción en el Registro Público de la Propiedad (RPP), certificados de libertad de gravamen y otros gastos de escrituración.
+              </p>
+              <div class="mt-3 flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-slate-100">
+                <span class="text-sm font-medium text-slate-600">Costo de cierre estimado (7%)</span>
+                <span class="text-base font-bold text-amber-600" id="c-cierrePreview">$0</span>
               </div>
-              <div class="input-group">
-                <label>Honorarios notariales + IVA (MXN)</label>
-                <input type="number" id="c-notario" value="45000" min="0" step="1000" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Avalúo + RPP + certificados (MXN)</label>
-                <input type="number" id="c-avaluoRpp" value="20000" min="0" step="1000" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Otros gastos de cierre (MXN)</label>
-                <input type="number" id="c-otrosCierre" value="8000" min="0" step="500" oninput="calcular()" />
-              </div>
+              <p id="c-notaPreventaCierre" class="hidden text-xs text-amber-700 mt-3 bg-amber-50 rounded-lg p-2 border border-amber-200">
+                <i class="fas fa-info-circle mr-1"></i> En operaciones de <strong>preventa</strong>, los costos de cierre se pagan hasta que se reciba el inmueble (al momento de la escrituración).
+              </p>
             </div>
           </div>
         </div>
@@ -413,8 +420,8 @@
         <div id="resultados-comprador">
           <div class="card p-5">
             <div class="flex items-center justify-between mb-4">
-              <h2 class="section-title"><i class="fas fa-clipboard-list text-blue-500"></i> Proforma del Comprador</h2>
-              <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium" id="badge-uso">Uso: Habitar</span>
+              <h2 class="section-title"><i class="fas fa-clipboard-list text-salo"></i> Proforma del Comprador</h2>
+              <span class="text-xs bg-salo-light text-salo-dark px-3 py-1 rounded-full font-medium" id="badge-uso">Uso: Habitar</span>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
@@ -423,12 +430,12 @@
                 <p class="text-lg font-bold text-slate-800" id="rc-precio">$0</p>
               </div>
               <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Costos de cierre</p>
+                <p class="text-xs text-slate-500 mb-1">Costos de cierre (7%)</p>
                 <p class="text-lg font-bold text-amber-600" id="rc-cierre">$0</p>
               </div>
               <div class="metric-card text-center">
                 <p class="text-xs text-slate-500 mb-1">Inversión total</p>
-                <p class="text-lg font-bold text-blue-600" id="rc-inversion">$0</p>
+                <p class="text-lg font-bold text-salo" id="rc-inversion">$0</p>
               </div>
               <div class="metric-card text-center">
                 <p class="text-xs text-slate-500 mb-1">Plusvalía estimada</p>
@@ -465,8 +472,8 @@
             <div id="rc-rentar" class="hidden space-y-4">
               <h3 class="text-sm font-semibold text-slate-700">Proyección de renta <span id="rc-tipoRentaLabel"></span></h3>
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="metric-card border-l-4 border-l-cyan-500">
-                  <p class="text-xs text-cyan-700 font-medium">Ingreso neto ANUAL</p>
+                <div class="metric-card border-l-4 border-l-salo">
+                  <p class="text-xs text-salo-dark font-medium">Ingreso neto ANUAL</p>
                   <p class="text-2xl font-bold text-slate-800" id="rc-netoAnual">$0</p>
                   <p class="text-xs text-slate-500 mt-1">Cap Rate: <strong id="rc-capRate">0%</strong></p>
                 </div>
@@ -566,7 +573,11 @@
     };
 
     function fmt(n) {
-      return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 }).format(n || 0);
+      // Formato: $1,234,567.89 (signo de pesos, coma miles, punto decimales)
+      const num = Number(n) || 0;
+      const parts = num.toFixed(0).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return '$' + parts.join('.');
     }
     function pct(n) { return ((n || 0) * 100).toFixed(1) + '%'; }
     function num(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
@@ -658,16 +669,20 @@
       const apre = num('c-apreciacion') / 100;
       const anos = num('c-anos') || 1;
 
-      let isai = num('c-isai');
-      if (isai === 0) {
-        isai = precio * (isaiPorEstado[estado] || 0.025);
-        document.getElementById('c-isai').value = Math.round(isai);
-      }
-      const notario = num('c-notario');
-      const avaluoRpp = num('c-avaluoRpp');
-      const otrosCierre = num('c-otrosCierre');
-      const totalCierre = isai + notario + avaluoRpp + otrosCierre;
+      // Costos de cierre del comprador = 7% del precio (cubre ISAI, notario, avalúo, RPP, certificados y otros)
+      const totalCierre = precio * 0.07;
       const inversionTotal = precio + totalCierre;
+
+      // Preview en panel izquierdo
+      const previewEl = document.getElementById('c-cierrePreview');
+      if (previewEl) previewEl.textContent = fmt(totalCierre);
+
+      // Nota preventa sobre pago de cierre
+      const notaPrev = document.getElementById('c-notaPreventaCierre');
+      if (notaPrev) {
+        if (esPreventa) notaPrev.classList.remove('hidden');
+        else notaPrev.classList.add('hidden');
+      }
 
       let valorFinal = precio;
       const labels = [], valores = [];
@@ -699,7 +714,8 @@
           '<div><p class="text-amber-700 text-xs">Enganche (' + num('c-enganchePct') + '%)</p><p class="font-semibold">' + fmt(enganche) + '</p></div>' +
           '<div><p class="text-amber-700 text-xs">Diferido (' + meses + ' meses)</p><p class="font-semibold">' + fmt(diferir) + ' <span class="text-xs">(' + fmt(mensual) + '/mes)</span></p></div>' +
           '<div><p class="text-amber-700 text-xs">Contra entrega (' + num('c-entregaPct') + '%)</p><p class="font-semibold">' + fmt(entrega) + '</p></div>' +
-          '<div class="col-span-2 sm:col-span-4"><p class="text-amber-700 text-xs">Notas</p><p class="text-sm">' + (notas || '—') + '</p></div>';
+          '<div class="col-span-2 sm:col-span-4"><p class="text-amber-700 text-xs">Notas</p><p class="text-sm">' + (notas || '—') + '</p></div>' +
+          '<div class="col-span-2 sm:col-span-4 mt-2 p-2 bg-amber-100 rounded-lg text-xs text-amber-800"><i class="fas fa-info-circle mr-1"></i> Los <strong>costos de cierre (7%)</strong> se pagan hasta que se reciba el inmueble, al momento de la escrituración.</div>';
       }
 
       if (uso === 'vivir') {
@@ -839,7 +855,7 @@
         '<div><p class="text-slate-500 text-xs">ISAI</p><p class="font-semibold">' + fmt(isai) + '</p></div>' +
         '<div><p class="text-slate-500 text-xs">Notario + IVA</p><p class="font-semibold">' + fmt(honNot + ivaNot) + '</p></div>' +
         '<div><p class="text-slate-500 text-xs">RPP + Avalúo</p><p class="font-semibold">' + fmt(rppAval) + '</p></div>' +
-        '<div><p class="text-slate-500 text-xs">Total est.</p><p class="font-semibold text-blue-600">' + fmt(totalComp) + '</p></div>';
+        '<div><p class="text-slate-500 text-xs">Total est.</p><p class="font-semibold text-salo">' + fmt(totalComp) + '</p></div>';
 
       renderChartCostosV(desglose.filter(function(d) { return d.valor > 0; }));
       generarDiagnosticoVendedor({ precio, totalCostos, pctCostos, neto, isr, ganancia, esHab, tipo, anos, roiVenta, roiAnualizado });
@@ -880,7 +896,7 @@
           labels: ['Bruto', 'Comisión', 'Operativos', 'Neto anual'],
           datasets: [{
             data: [bruto, comision, op, neto],
-            backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981'],
+            backgroundColor: ['#30643E', '#ef4444', '#f59e0b', '#10b981'],
             borderRadius: 8
           }]
         },
@@ -900,7 +916,7 @@
         type: 'doughnut',
         data: {
           labels: data.map(function(d) { return d.label; }),
-          datasets: [{ data: data.map(function(d) { return d.valor; }), backgroundColor: ['#3b82f6','#ef4444','#f59e0b','#8b5cf6','#f43f5e','#64748b'], borderWidth: 0 }]
+          datasets: [{ data: data.map(function(d) { return d.valor; }), backgroundColor: ['#30643E','#ef4444','#f59e0b','#8b5cf6','#f43f5e','#64748b'], borderWidth: 0 }]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
@@ -911,9 +927,10 @@
 
     function generarDiagnosticoComprador(d) {
       let html = '<h3 class="font-bold text-slate-800 text-base mb-3">Resumen para el comprador</h3>';
-      html += '<p class="text-sm text-slate-700 leading-relaxed mb-3">Inversión total estimada: <strong>' + fmt(d.inversionTotal) + '</strong> (precio ' + fmt(d.precio) + ' + costos de cierre ' + fmt(d.totalCierre) + ').';
-      if (d.esPreventa) html += ' <span class="text-amber-700 font-medium">Operación en preventa.</span>';
+      html += '<p class="text-sm text-slate-700 leading-relaxed mb-3">Inversión total estimada: <strong>' + fmt(d.inversionTotal) + '</strong> (precio ' + fmt(d.precio) + ' + costos de cierre al 7% = ' + fmt(d.totalCierre) + ').';
+      if (d.esPreventa) html += ' <span class="text-amber-700 font-medium">Operación en preventa: los costos de cierre se pagan al recibir el inmueble.</span>';
       html += '</p>';
+      html += '<p class="text-xs text-slate-500 mb-3">El 7% de costos de cierre cubre ISAI, honorarios notariales + IVA, avalúo, RPP, certificados y otros gastos de escrituración.</p>';
 
       if (d.uso === 'vivir') {
         html += '<div class="mb-3"><p class="text-sm text-slate-700">Al habitar la propiedad, el beneficio principal es la <strong>plusvalía</strong>.</p>';
@@ -976,10 +993,7 @@
       document.getElementById('c-costosOpDiaria').value = 42000;
       document.getElementById('c-rentaMensual').value = 18500;
       document.getElementById('c-comAdmin').value = 8;
-      document.getElementById('c-isai').value = 0;
-      document.getElementById('c-notario').value = 45000;
-      document.getElementById('c-avaluoRpp').value = 20000;
-      document.getElementById('c-otrosCierre').value = 8000;
+
       document.getElementById('v-precio').value = 3500000;
       document.getElementById('v-precioCompra').value = 2200000;
       document.getElementById('v-anosPosesion').value = 6;
