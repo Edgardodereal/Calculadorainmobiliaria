@@ -62,20 +62,75 @@
     }
     input:checked + .slider { background-color: #30643E; }
     input:checked + .slider:before { transform: translateX(22px); }
-    @media print {
-      .no-print { display: none !important; }
-      body { background: white; }
-      .card { box-shadow: none; border: 1px solid #e2e8f0; }
-    }
-  
+
     .bg-salo { background-color: #30643E !important; }
     .bg-salo-light { background-color: #e8f5ec !important; }
     .text-salo { color: #30643E !important; }
     .text-salo-dark { color: #28412E !important; }
     .border-salo-border { border-color: #c5d9cb !important; }
     .border-l-salo { border-left-color: #30643E !important; }
-    .mode-btn.active-buyer { background: #f0f7f2; color: #28412E; border-color: #30643E; }
 
+    /* Estilos exclusivos para impresión limpia y ordenada en formato PDF / Carta */
+    @media print {
+      @page {
+        size: letter;
+        margin: 15mm;
+      }
+      .no-print { display: none !important; }
+      body {
+        background: white !important;
+        color: #0f172a !important;
+        font-size: 11pt;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .max-w-7xl {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .grid {
+        display: block !important;
+      }
+      .lg\:col-span-4, .lg\:col-span-8 {
+        width: 100% !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 0.5rem !important;
+        margin-bottom: 15px !important;
+        padding: 15px !important;
+        page-break-inside: avoid;
+      }
+      /* Ocultar inputs editables y mostrar su valor limpio como texto formateado si se requiere, o conservar contenedores de resultados */
+      #panel-comprador-inputs, #panel-vendedor-inputs {
+        display: none !important;
+      }
+      #resultados-comprador, #resultados-vendedor {
+        display: block !important;
+      }
+      /* Encabezado especial para impresión */
+      .print-header {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 3px solid #30643E;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+      }
+      .print-client-card {
+        display: block !important;
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        border-left: 4px solid #30643E !important;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+      }
+    }
+    .print-header { display: none; }
+    .print-client-card { display: none; }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -93,8 +148,8 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="window.print()" class="btn-secondary text-sm flex items-center gap-2">
-          <i class="fas fa-print"></i> <span class="hidden sm:inline">Imprimir</span>
+        <button onclick="window.print()" class="btn-primary text-sm flex items-center gap-2">
+          <i class="fas fa-file-pdf"></i> <span class="hidden sm:inline">Descargar PDF / Imprimir</span>
         </button>
         <button onclick="resetAll()" class="btn-secondary text-sm flex items-center gap-2">
           <i class="fas fa-redo"></i> <span class="hidden sm:inline">Reiniciar</span>
@@ -104,6 +159,37 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+
+    <!-- ENCABEZADO Y CAMPO DE CLIENTE PARA IMPRESIÓN / PDF -->
+    <div class="print-header">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900" style="color:#30643E;">Edgardo de Real</h1>
+        <p class="text-xs text-slate-600 uppercase tracking-wider font-semibold">Asesoría Inmobiliaria Profesional</p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm font-bold text-slate-800">Resumen de Análisis Inmobiliario</p>
+        <p class="text-xs text-slate-500" id="print-date-label"></p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN INTERACTIVA / VISIBLE EN PANTALLA PARA CAPTURAR NOMBRE DE CLIENTE -->
+    <div class="card p-4 mb-6 bg-emerald-50/60 border border-emerald-200">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="w-full sm:w-1/2">
+          <label class="block text-xs font-bold uppercase text-slate-700 mb-1"><i class="fas fa-user-tie text-salo mr-1"></i> Nombre del cliente (Personalización)</label>
+          <input type="text" id="input-nombre-cliente" placeholder="Ej. Lic. Alejandro Garza" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-slate-800 font-medium focus:ring-2 focus:ring-emerald-700 outline-none" oninput="actualizarNombreCliente(this.value)" />
+        </div>
+        <div class="w-full sm:w-1/2 text-right text-xs text-slate-500 hidden sm:block">
+          <span>Este nombre aparecerá en la parte superior al exportar o imprimir el resumen en PDF.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARJETA DE CLIENTE PARA EL PDF IMPRESO -->
+    <div class="print-client-card">
+      <span class="text-xs font-bold text-slate-500 uppercase block mb-1">Cliente Analizado:</span>
+      <span id="display-nombre-cliente" class="text-lg font-bold text-slate-900">Inversionista / Particular</span>
+    </div>
 
     <div class="card p-5 mb-6 no-print">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -124,7 +210,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <div class="lg:col-span-4 space-y-5">
+      <div class="lg:col-span-4 space-y-5 no-print">
 
         <!-- COMPRADOR INPUTS -->
         <div id="panel-comprador-inputs">
@@ -415,7 +501,7 @@
       </div>
 
       <!-- RESULTADOS -->
-      <div class="lg:col-span-8 space-y-5">
+      <div class="lg:col-span-12 space-y-5" id="contenedor-resultados-principal">
 
         <div id="resultados-comprador">
           <div class="card p-5">
@@ -464,7 +550,7 @@
                   <p class="text-xl font-bold text-emerald-600" id="rc-valorFinal">$0</p>
                 </div>
               </div>
-              <div class="chart-container">
+              <div class="chart-container no-print">
                 <canvas id="chartPlusvalia"></canvas>
               </div>
             </div>
@@ -497,7 +583,7 @@
                   <tbody id="rc-tablaRenta" class="text-slate-700"></tbody>
                 </table>
               </div>
-              <div class="chart-container">
+              <div class="chart-container no-print">
                 <canvas id="chartRenta"></canvas>
               </div>
             </div>
@@ -535,7 +621,7 @@
                 <h3 class="text-sm font-semibold text-slate-700 mb-3">Desglose de costos</h3>
                 <div class="space-y-2 text-sm" id="rv-desglose"></div>
               </div>
-              <div class="chart-container">
+              <div class="chart-container no-print">
                 <canvas id="chartCostosV"></canvas>
               </div>
             </div>
@@ -573,7 +659,6 @@
     };
 
     function fmt(n) {
-      // Formato: $1,234,567.89 (signo de pesos, coma miles, punto decimales)
       const num = Number(n) || 0;
       const parts = num.toFixed(0).split('.');
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -581,6 +666,13 @@
     }
     function pct(n) { return ((n || 0) * 100).toFixed(1) + '%'; }
     function num(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+
+    function actualizarNombreCliente(val) {
+      const display = document.getElementById('display-nombre-cliente');
+      if (display) {
+        display.textContent = val.trim() !== '' ? val : 'Inversionista / Particular';
+      }
+    }
 
     function setMainMode(m) {
       mainMode = m;
@@ -593,6 +685,14 @@
       document.getElementById('panel-vendedor-inputs').classList.toggle('hidden', m !== 'vendedor');
       document.getElementById('resultados-comprador').classList.toggle('hidden', m !== 'comprador');
       document.getElementById('resultados-vendedor').classList.toggle('hidden', m !== 'vendedor');
+
+      // Ajustar diseño de columnas para resultados cuando se imprime u ocultan los inputs
+      const resContainer = document.getElementById('contenedor-resultados-principal');
+      if (resContainer) {
+        if (m === 'comprador' || m === 'vendedor') {
+          resContainer.className = "lg:col-span-8 space-y-5";
+        }
+      }
       calcular();
     }
 
@@ -669,15 +769,12 @@
       const apre = num('c-apreciacion') / 100;
       const anos = num('c-anos') || 1;
 
-      // Costos de cierre del comprador = 7% del precio (cubre ISAI, notario, avalúo, RPP, certificados y otros)
       const totalCierre = precio * 0.07;
       const inversionTotal = precio + totalCierre;
 
-      // Preview en panel izquierdo
       const previewEl = document.getElementById('c-cierrePreview');
       if (previewEl) previewEl.textContent = fmt(totalCierre);
 
-      // Nota preventa sobre pago de cierre
       const notaPrev = document.getElementById('c-notaPreventaCierre');
       if (notaPrev) {
         if (esPreventa) notaPrev.classList.remove('hidden');
@@ -798,7 +895,7 @@
 
       if (esHab && esVivienda && precio <= limiteExencion) {
         isr = 0;
-        isrNota = 'Exento (vivienda habitación principal ≤ 700,000 UDIs)';
+        isrNota = 'Exento (vivienda habitación principal)';
       } else if (esHab && esVivienda && precio > limiteExencion) {
         const excedente = precio - limiteExencion;
         const propExcedente = excedente / precio;
@@ -808,7 +905,7 @@
         isr = ganancia * 0.25;
         isrNota = esVivienda
           ? 'ISR estimado 25% sobre ganancia (no marcada como habitación principal)'
-          : 'ISR estimado 25% sobre ganancia (terreno/local no aplica exención)';
+          : 'ISR estimado 25% sobre ganancia (terreno/local)';
       }
 
       const totalCostos = comisionTotal + notarioV + cert + adeudos + otros + isr;
@@ -847,8 +944,8 @@
         htmlDes += '</div><span class="font-semibold">' + fmt(d.valor) + '</span></div>';
       });
       htmlDes += '<div class="flex justify-between items-center py-2 mt-1 font-bold"><span>TOTAL COSTOS</span><span class="text-red-600">' + fmt(totalCostos) + '</span></div>';
-      htmlDes += '<div class="flex justify-between items-center py-1 text-sm text-slate-600"><span>ROI total (sobre precio compra, ' + anos + ' años posesión)</span><span class="font-semibold">' + pct(roiVenta) + '</span></div>';
-      htmlDes += '<div class="flex justify-between items-center py-1 text-sm text-slate-600"><span>ROI anualizado aproximado</span><span class="font-semibold">' + pct(roiAnualizado) + '</span></div>';
+      htmlDes += '<div class="flex justify-between items-center py-1 text-sm text-slate-600"><span>ROI total (' + anos + ' años posesión)</span><span class="font-semibold">' + pct(roiVenta) + '</span></div>';
+      htmlDes += '<div class="flex justify-between items-center py-1 text-sm text-slate-600"><span>ROI anualizado aprox.</span><span class="font-semibold">' + pct(roiAnualizado) + '</span></div>';
       document.getElementById('rv-desglose').innerHTML = htmlDes;
 
       document.getElementById('rv-comprador').innerHTML =
@@ -872,8 +969,8 @@
           datasets: [{
             label: 'Valor estimado del inmueble',
             data: valores,
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16,185,129,0.1)',
+            borderColor: '#30643E',
+            backgroundColor: 'rgba(48,100,62,0.1)',
             fill: true,
             tension: 0.3
           }]
@@ -926,11 +1023,11 @@
     }
 
     function generarDiagnosticoComprador(d) {
-      let html = '<h3 class="font-bold text-slate-800 text-base mb-3">Resumen para el comprador</h3>';
+      let html = '<h3 class="font-bold text-slate-800 text-base mb-3">Resumen analítico para el cliente</h3>';
       html += '<p class="text-sm text-slate-700 leading-relaxed mb-3">Inversión total estimada: <strong>' + fmt(d.inversionTotal) + '</strong> (precio ' + fmt(d.precio) + ' + costos de cierre al 7% = ' + fmt(d.totalCierre) + ').';
       if (d.esPreventa) html += ' <span class="text-amber-700 font-medium">Operación en preventa: los costos de cierre se pagan al recibir el inmueble.</span>';
       html += '</p>';
-      html += '<p class="text-xs text-slate-500 mb-3">El 7% de costos de cierre cubre ISAI, honorarios notariales + IVA, avalúo, RPP, certificados y otros gastos de escrituración.</p>';
+      html += '<p class="text-xs text-slate-500 mb-3">El 7% de costos de cierre cubre ISAI, honorarios notariales + IVA, avalúo, RPP, certificados y gastos de escrituración.</p>';
 
       if (d.uso === 'vivir') {
         html += '<div class="mb-3"><p class="text-sm text-slate-700">Al habitar la propiedad, el beneficio principal es la <strong>plusvalía</strong>.</p>';
@@ -939,22 +1036,22 @@
         html += '<li>Valor proyectado al final: <strong>' + fmt(d.valorFinal) + '</strong></li>';
         html += '<li>Costo anual de posesión (mant. + predial/seguro): <strong>' + fmt(d.costoAnual) + '</strong></li>';
         html += '<li>Apreciación anual usada: <strong>' + (d.apre*100).toFixed(1) + '%</strong></li></ul></div>';
-        html += '<p class="text-sm text-slate-700 leading-relaxed"><strong class="neutral">Recomendación:</strong> Útil si tu prioridad es vivir y construir patrimonio a largo plazo. El retorno no es en flujo de efectivo, sino en el incremento del valor del activo.</p>';
+        html += '<p class="text-sm text-slate-700 leading-relaxed"><strong class="neutral">Conclusión / Recomendación:</strong> Excelente opción para consolidar patrimonio con plusvalía a largo plazo.</p>';
       } else {
         const nivel = d.capRate >= 0.08 ? 'atractivo' : d.capRate >= 0.05 ? 'moderado' : 'bajo';
         const color = nivel === 'atractivo' ? 'positive' : nivel === 'moderado' ? 'neutral' : 'negative';
-        html += '<div class="mb-3"><p class="text-sm text-slate-700">Escenario de <strong>renta ' + (d.tipoRenta === 'diaria' ? 'diaria (vacacional)' : 'fija / mensual') + '</strong>. El ROI se calcula <strong>únicamente de forma anual</strong> (no se multiplica por los años de posesión).</p>';
+        html += '<div class="mb-3"><p class="text-sm text-slate-700">Escenario de <strong>renta ' + (d.tipoRenta === 'diaria' ? 'diaria (vacacional)' : 'fija / mensual') + '</strong>.</p>';
         html += '<ul class="mt-2 text-sm text-slate-600 space-y-1 list-disc list-inside">';
         html += '<li>Ingreso neto anual: <strong class="positive">' + fmt(d.netoAnual) + '</strong></li>';
         html += '<li>Cap Rate sobre inversión total: <strong class="' + color + '">' + pct(d.capRate) + '</strong> (' + nivel + ')</li>';
         html += '<li>Plusvalía adicional estimada a ' + d.anos + ' años: <strong>' + fmt(d.plusvalia) + '</strong></li></ul></div>';
-        html += '<p class="text-sm text-slate-700 leading-relaxed"><strong class="' + color + '">Recomendación:</strong> ';
-        if (d.capRate >= 0.08) html += 'El Cap Rate es atractivo. La renta genera flujo positivo de forma recurrente.';
-        else if (d.capRate >= 0.05) html += 'Cap Rate aceptable. Combina flujo estable con plusvalía a mediano plazo.';
-        else html += 'Cap Rate bajo. Evalúa si el precio de compra o los gastos operativos se pueden optimizar.';
+        html += '<p class="text-sm text-slate-700 leading-relaxed"><strong class="' + color + '">Conclusión / Recomendación:</strong> ';
+        if (d.capRate >= 0.08) html += 'El Cap Rate es muy atractivo, generando excelente flujo de efectivo recurrente.';
+        else if (d.capRate >= 0.05) html += 'Cap Rate aceptable con equilibrio entre renta y plusvalía.';
+        else html += 'Cap Rate conservador. Evaluar optimización de precio o costos operativos.';
         html += '</p>';
       }
-      html += '<p class="text-xs text-slate-400 mt-4 italic">* Cálculos orientativos. Consulta siempre a notario y contador para cifras definitivas.</p>';
+      html += '<p class="text-xs text-slate-400 mt-4 italic">* Presentado por Edgardo de Real. Cifras orientativas sujetas a validación notarial y fiscal.</p>';
       document.getElementById('diagnostico-contenido').innerHTML = html;
     }
 
@@ -962,19 +1059,17 @@
       const nivel = d.pctCostos < 0.07 ? 'bajo' : d.pctCostos < 0.10 ? 'moderado' : 'alto';
       const color = nivel === 'bajo' ? 'positive' : nivel === 'moderado' ? 'neutral' : 'negative';
 
-      let html = '<h3 class="font-bold text-slate-800 text-base mb-3">Resumen para el vendedor</h3>';
+      let html = '<h3 class="font-bold text-slate-800 text-base mb-3">Resumen analítico para el vendedor</h3>';
       html += '<p class="text-sm text-slate-700 leading-relaxed mb-3">Al vender en <strong>' + fmt(d.precio) + '</strong>, los costos totales estimados son <strong class="' + color + '">' + fmt(d.totalCostos) + '</strong> (' + pct(d.pctCostos) + ' del precio). Neto a recibir: <strong class="positive">' + fmt(d.neto) + '</strong>.</p>';
       html += '<ul class="text-sm text-slate-600 space-y-1 list-disc list-inside mb-3">';
-      html += '<li>ISR estimado: <strong>' + fmt(d.isr) + '</strong> ' + (d.esHab && (d.tipo === 'casa' || d.tipo === 'depto') ? '(posible exención de vivienda)' : '') + '</li>';
+      html += '<li>ISR estimado: <strong>' + fmt(d.isr) + '</strong></li>';
       html += '<li>Ganancia fiscal aproximada: <strong>' + fmt(d.ganancia) + '</strong></li>';
-      html += '<li>Años de posesión: <strong>' + d.anos + '</strong> → ROI total sobre precio de compra: <strong>' + pct(d.roiVenta) + '</strong></li>';
-      html += '<li>ROI anualizado aproximado: <strong>' + pct(d.roiAnualizado) + '</strong></li>';
-      html += '<li>Nivel de costos de cierre: <strong class="' + color + '">' + nivel.toUpperCase() + '</strong> (rango típico 6-12%)</li></ul>';
-      html += '<p class="text-sm text-slate-700 leading-relaxed"><strong class="' + color + '">Recomendación:</strong> ';
-      if (d.pctCostos > 0.10) html += 'Costos en rango alto. Negocia comisión inmobiliaria y verifica si aplica exención de ISR por vivienda habitación (casa o departamento).';
-      else if (d.pctCostos > 0.07) html += 'Costos dentro del rango de mercado. Buen momento para cerrar si el precio es el deseado.';
-      else html += 'Costos relativamente bajos. Condiciones favorables para la venta.';
-      html += '</p><p class="text-xs text-slate-400 mt-4 italic">* El ISR definitivo lo calcula el notario. Este es solo un estimado orientativo.</p>';
+      html += '<li>Años de posesión: <strong>' + d.anos + '</strong> | ROI total: <strong>' + pct(d.roiVenta) + '</strong></li>';
+      html += '<li>ROI anualizado aprox.: <strong>' + pct(d.roiAnualizado) + '</strong></li></ul>';
+      html += '<p class="text-sm text-slate-700 leading-relaxed"><strong class="' + color + '">Conclusión / Recomendación:</strong> ';
+      if (d.pctCostos > 0.10) html += 'Costos en rango alto. Se sugiere revisar exenciones fiscales y negociación de comisiones.';
+      else html += 'Costos dentro de parámetros normales de mercado. Viable para concretar operación.';
+      html += '</p><p class="text-xs text-slate-400 mt-4 italic">* Presentado por Edgardo de Real. El cálculo definitivo de impuestos corresponde al notario.</p>';
       document.getElementById('diagnostico-contenido').innerHTML = html;
     }
 
@@ -993,6 +1088,8 @@
       document.getElementById('c-costosOpDiaria').value = 42000;
       document.getElementById('c-rentaMensual').value = 18500;
       document.getElementById('c-comAdmin').value = 8;
+      document.getElementById('input-nombre-cliente').value = '';
+      actualizarNombreCliente('');
 
       document.getElementById('v-precio').value = 3500000;
       document.getElementById('v-precioCompra').value = 2200000;
@@ -1015,6 +1112,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const dateLabel = document.getElementById('print-date-label');
+      if (dateLabel) {
+        dateLabel.textContent = 'Fecha: ' + new Date().toLocaleDateString('es-MX', options);
+      }
       setMainMode('comprador');
       setUso('vivir');
       setTipoRenta('diaria');
