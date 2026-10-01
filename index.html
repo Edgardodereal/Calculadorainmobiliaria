@@ -67,22 +67,20 @@
     .bg-salo-light { background-color: #e8f5ec !important; }
     .text-salo { color: #30643E !important; }
     .text-salo-dark { color: #28412E !important; }
-    .border-salo-border { border-color: #c5d9cb !important; }
-    .border-l-salo { border-left-color: #30643E !important; }
 
     /* =========================================================
-       ESTILOS EXCLUSIVOS PARA DESCARGAR PDF / IMPRESIÓN (2 HOJAS)
+       CONFIGURACIÓN IMPRESIÓN PDF: TAMAÑO CARTA HORIZONTAL (LANDSCAPE)
        ========================================================= */
     @media print {
       @page {
-        size: letter portrait;
-        margin: 10mm 12mm 10mm 12mm;
+        size: letter landscape;
+        margin: 6mm 8mm 6mm 8mm;
       }
       body {
         background: white !important;
         color: #0f172a !important;
-        font-size: 9.5pt !important;
-        line-height: 1.3 !important;
+        font-size: 8pt !important;
+        line-height: 1.2 !important;
         padding: 0 !important;
         margin: 0 !important;
         -webkit-print-color-adjust: exact !important;
@@ -90,66 +88,83 @@
       }
       .no-print { display: none !important; }
       .max-w-7xl { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
-      
-      /* Encabezados de impresión */
+
       .print-header {
         display: flex !important;
         justify-content: space-between;
         align-items: center;
         border-bottom: 2px solid #30643E;
-        padding-bottom: 6px;
-        margin-bottom: 10px;
+        padding-bottom: 4px;
+        margin-bottom: 6px;
       }
       .print-client-card {
         display: block !important;
         background: #f8fafc !important;
         border: 1px solid #cbd5e1 !important;
         border-left: 4px solid #30643E !important;
-        padding: 8px 12px;
-        margin-bottom: 12px;
+        padding: 4px 8px;
+        margin-bottom: 8px;
         border-radius: 4px;
       }
 
-      /* Ajuste de tarjetas y métricas */
+      /* Layout Horizontal para aprovechar el ancho */
+      .grid-layout-pdf {
+        display: grid !important;
+        grid-template-columns: 4.5fr 7.5fr !important;
+        gap: 10px !important;
+      }
+      .panel-inputs-print {
+        display: block !important;
+      }
+
       .card {
         box-shadow: none !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 0.5rem !important;
-        padding: 10px 12px !important;
-        margin-bottom: 10px !important;
-      }
-      .metric-card {
-        padding: 8px !important;
-        border-radius: 0.5rem !important;
-      }
-      .metric-card p.text-lg, .metric-card p.text-2xl, .metric-card p.text-xl {
-        font-size: 1.1rem !important;
-      }
-
-      /* Reestructuración para Hoja 1 y Hoja 2 */
-      #contenedor-resultados-principal {
-        display: block !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 0.4rem !important;
+        padding: 6px 8px !important;
+        margin-bottom: 6px !important;
+        page-break-inside: avoid;
       }
       
-      /* Mantener gráficas visibles en el PDF */
-      .chart-container {
-        display: block !important;
-        height: 200px !important;
-        margin-top: 10px;
+      .input-group label { font-size: 0.65rem !important; margin-bottom: 1px !important; }
+      .input-group input, .input-group select, .input-group textarea {
+        padding: 2px 4px !important;
+        font-size: 0.75rem !important;
+        border-radius: 0.25rem !important;
+        background: white !important;
       }
 
-      /* Salto de página exacto después de las métricas principales */
-      .page-break-after {
+      .metric-card {
+        padding: 4px 6px !important;
+        border-radius: 0.3rem !important;
+      }
+      .metric-card p.text-lg, .metric-card p.text-2xl, .metric-card p.text-xl {
+        font-size: 0.9rem !important;
+      }
+
+      .page-break-mark {
         page-break-after: always !important;
         break-after: page !important;
       }
+
+      .chart-container-print {
+        display: block !important;
+        height: 240px !important;
+        margin-bottom: 8px;
+      }
+
+      .tab-btn, .toggle-switch, .btn-primary, .btn-secondary {
+        display: none !important;
+      }
     }
+
     .print-header { display: none; }
     .print-client-card { display: none; }
   </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
 
+  <!-- HEADER NAVEGACIÓN -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 no-print">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -175,19 +190,19 @@
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
 
-    <!-- ENCABEZADO PARA PDF -->
+    <!-- ENCABEZADO IMPRESIÓN PDF HORIZONTAL -->
     <div class="print-header">
       <div>
-        <h1 class="text-xl font-bold text-slate-900" style="color:#30643E;">Edgardo de Real</h1>
-        <p class="text-xs text-slate-600 uppercase tracking-wider font-semibold">Asesoría Inmobiliaria Profesional</p>
+        <h1 class="text-base font-bold text-slate-900" style="color:#30643E;">Edgardo de Real</h1>
+        <p class="text-[9px] text-slate-600 uppercase tracking-wider font-semibold">Asesoría Inmobiliaria Profesional</p>
       </div>
       <div class="text-right">
-        <p class="text-sm font-bold text-slate-800">Resumen de Análisis Inmobiliario</p>
-        <p class="text-xs text-slate-500" id="print-date-label"></p>
+        <p class="text-xs font-bold text-slate-800">Resumen Estratégico Inmobiliario (Carta Horizontal)</p>
+        <p class="text-[9px] text-slate-500" id="print-date-label"></p>
       </div>
     </div>
 
-    <!-- SECCIÓN DE NOMBRE DE CLIENTE -->
+    <!-- NOMBRE CLIENTE (INTERACTIVO) -->
     <div class="card p-4 mb-6 bg-emerald-50/60 border border-emerald-200 no-print">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="w-full sm:w-1/2">
@@ -200,12 +215,13 @@
       </div>
     </div>
 
-    <!-- TARJETA DE CLIENTE PARA PDF -->
+    <!-- TARJETA NOMBRE CLIENTE IMPRESIÓN -->
     <div class="print-client-card">
-      <span class="text-xs font-bold text-slate-500 uppercase block">Cliente Analizado:</span>
-      <span id="display-nombre-cliente" class="text-base font-bold text-slate-900">Inversionista / Particular</span>
+      <span class="text-[9px] font-bold text-slate-500 uppercase block">Cliente Analizado:</span>
+      <span id="display-nombre-cliente" class="text-xs font-bold text-slate-900">Inversionista / Particular</span>
     </div>
 
+    <!-- SELECCIÓN MODO COMPRADOR/VENDEDOR -->
     <div class="card p-5 mb-6 no-print">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -223,16 +239,17 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- ESTRUCTURA PRINCIPAL DE PÁGINAS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 grid-layout-pdf">
 
-      <!-- PANEL DE CONTROL (INPUTS) -->
-      <div class="lg:col-span-4 space-y-5 no-print">
+      <!-- COLUMNA ENTRADAS (PÁGINA 1 PDF) -->
+      <div class="lg:col-span-4 space-y-4 panel-inputs-print">
 
         <!-- COMPRADOR INPUTS -->
         <div id="panel-comprador-inputs">
-          <div class="card p-5 mb-5">
-            <h2 class="section-title mb-4"><i class="fas fa-building text-salo"></i> Datos de la propiedad</h2>
-            <div class="space-y-3">
+          <div class="card p-4">
+            <h2 class="section-title text-sm mb-2"><i class="fas fa-building text-salo"></i> Datos de la Propiedad</h2>
+            <div class="space-y-2">
               <div class="input-group">
                 <label>Precio de compra / valor (MXN)</label>
                 <input type="number" id="c-precio" value="3500000" min="0" step="10000" oninput="calcular()" />
@@ -249,76 +266,38 @@
                   <option value="otro">Otro / Promedio nacional</option>
                 </select>
               </div>
-              <div class="input-group">
-                <label>Tipo de propiedad</label>
-                <select id="c-tipo" onchange="calcular()">
-                  <option value="casa">Casa habitación</option>
-                  <option value="depto">Departamento</option>
-                  <option value="terreno">Terreno</option>
-                  <option value="comercial">Local comercial</option>
-                </select>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="input-group">
+                  <label>Tipo Inmueble</label>
+                  <select id="c-tipo" onchange="calcular()">
+                    <option value="casa">Casa habitación</option>
+                    <option value="depto">Departamento</option>
+                    <option value="terreno">Terreno</option>
+                    <option value="comercial">Local comercial</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label>Apreciación (%)</label>
+                  <input type="number" id="c-apreciacion" value="4.5" min="0" max="15" step="0.1" oninput="calcular()" />
+                </div>
               </div>
               <div class="input-group">
-                <label>Apreciación anual estimada (%)</label>
-                <input type="number" id="c-apreciacion" value="4.5" min="0" max="15" step="0.1" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Años de proyección / posesión esperada</label>
+                <label>Años proyectados de posesión</label>
                 <input type="number" id="c-anos" value="5" min="1" max="30" step="1" oninput="calcular()" />
               </div>
             </div>
           </div>
 
-          <div class="card p-5 mb-5">
-            <h2 class="section-title mb-4"><i class="fas fa-home text-salo"></i> Uso final de la propiedad</h2>
-            <div class="flex flex-wrap gap-2 mb-4">
+          <div class="card p-4">
+            <h2 class="section-title text-sm mb-2"><i class="fas fa-home text-salo"></i> Mantenimiento y Uso</h2>
+            <div class="flex flex-wrap gap-2 mb-2 no-print">
               <button id="uso-vivir" class="tab-btn active" onclick="setUso('vivir')">Vivir / Habitar</button>
               <button id="uso-rentar" class="tab-btn" onclick="setUso('rentar')">Comprar para rentar</button>
             </div>
 
-            <div id="sub-rentar" class="hidden space-y-3">
-              <div class="flex flex-wrap gap-2 mb-2">
-                <button id="renta-diaria" class="tab-btn active" onclick="setTipoRenta('diaria')">Renta diaria (vacacional)</button>
-                <button id="renta-fija" class="tab-btn" onclick="setTipoRenta('fija')">Renta mensual / fija</button>
-              </div>
-
-              <div id="campos-diaria" class="space-y-3">
-                <div class="input-group">
-                  <label>Tarifa diaria estimada (MXN)</label>
-                  <input type="number" id="c-rentaDiaria" value="1850" min="0" step="50" oninput="calcular()" />
-                </div>
-                <div class="input-group">
-                  <label>Ocupación promedio anual (%)</label>
-                  <input type="number" id="c-ocupacion" value="68" min="0" max="100" step="1" oninput="calcular()" />
-                </div>
-                <div class="input-group">
-                  <label>% Comisión plataforma / administración</label>
-                  <input type="number" id="c-comPlat" value="18" min="0" max="40" step="1" oninput="calcular()" />
-                </div>
-                <div class="input-group">
-                  <label>Costos operativos anuales (MXN)</label>
-                  <input type="number" id="c-costosOpDiaria" value="42000" min="0" step="1000" oninput="calcular()" />
-                </div>
-              </div>
-
-              <div id="campos-fija" class="hidden space-y-3">
-                <div class="input-group">
-                  <label>Renta mensual (MXN)</label>
-                  <input type="number" id="c-rentaMensual" value="18500" min="0" step="500" oninput="calcular()" />
-                </div>
-                <div class="input-group">
-                  <label>% Comisión administración</label>
-                  <input type="number" id="c-comAdmin" value="8" min="0" max="20" step="1" oninput="calcular()" />
-                </div>
-                <p class="text-xs text-slate-500 bg-slate-100 rounded-lg p-2">
-                  Costos operativos de renta fija = <strong>10% automático</strong> del ingreso bruto anual
-                </p>
-              </div>
-            </div>
-
-            <div id="sub-vivir" class="space-y-3">
+            <div id="sub-vivir" class="space-y-2">
               <div class="input-group">
-                <label>Mantenimiento mensual estimado (MXN)</label>
+                <label>Mantenimiento mensual (MXN)</label>
                 <input type="number" id="c-mantVivir" value="3500" min="0" step="100" oninput="calcular()" />
               </div>
               <div class="input-group">
@@ -326,265 +305,168 @@
                 <input type="number" id="c-predialSeguro" value="18000" min="0" step="500" oninput="calcular()" />
               </div>
             </div>
+
+            <div id="sub-rentar" class="hidden space-y-2">
+              <div class="flex flex-wrap gap-2 mb-2 no-print">
+                <button id="renta-diaria" class="tab-btn active" onclick="setTipoRenta('diaria')">Renta diaria</button>
+                <button id="renta-fija" class="tab-btn" onclick="setTipoRenta('fija')">Renta fija</button>
+              </div>
+              <div id="campos-diaria" class="space-y-2">
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="input-group"><label>Tarifa diaria</label><input type="number" id="c-rentaDiaria" value="1850" oninput="calcular()" /></div>
+                  <div class="input-group"><label>Ocupación (%)</label><input type="number" id="c-ocupacion" value="68" oninput="calcular()" /></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="input-group"><label>% Comisión</label><input type="number" id="c-comPlat" value="18" oninput="calcular()" /></div>
+                  <div class="input-group"><label>Costos op. anual</label><input type="number" id="c-costosOpDiaria" value="42000" oninput="calcular()" /></div>
+                </div>
+              </div>
+              <div id="campos-fija" class="hidden space-y-2">
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="input-group"><label>Renta mensual</label><input type="number" id="c-rentaMensual" value="18500" oninput="calcular()" /></div>
+                  <div class="input-group"><label>% Admin.</label><input type="number" id="c-comAdmin" value="8" oninput="calcular()" /></div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="card p-5 mb-5">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="section-title"><i class="fas fa-calendar-check text-salo"></i> ¿Es preventa?</h2>
-              <label class="toggle-switch">
+          <div class="card p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="section-title text-sm"><i class="fas fa-calendar-check text-salo"></i> ¿Es Preventa?</h2>
+              <label class="toggle-switch no-print">
                 <input type="checkbox" id="c-esPreventa" onchange="togglePreventa(); calcular()" />
                 <span class="slider"></span>
               </label>
             </div>
 
-            <div id="campos-preventa" class="hidden space-y-3">
-              <div class="input-group">
-                <label>Fecha estimada de entrega</label>
-                <input type="date" id="c-fechaEntrega" oninput="calcular()" />
+            <div id="campos-preventa" class="hidden space-y-2">
+              <div class="grid grid-cols-2 gap-2">
+                <div class="input-group"><label>Precio Lista</label><input type="number" id="c-precioLista" value="3800000" oninput="syncPreventa(); calcular()" /></div>
+                <div class="input-group"><label>Descuento</label><input type="number" id="c-descuento" value="300000" oninput="syncPreventa(); calcular()" /></div>
               </div>
-              <div class="input-group">
-                <label>Precio de lista / final (MXN)</label>
-                <input type="number" id="c-precioLista" value="3800000" min="0" step="10000" oninput="syncPreventa(); calcular()" />
+              <div class="input-group"><label>Precio Neto con Descuento</label><input type="number" id="c-precioNeto" value="3500000" oninput="calcular()" /></div>
+              
+              <!-- CORRECCIÓN DE CÁLCULO DE PREVENTA -->
+              <div class="grid grid-cols-3 gap-2">
+                <div class="input-group"><label>Apartado ($)</label><input type="number" id="c-apartado" value="50000" oninput="recalcularPreventa(); calcular()" /></div>
+                <div class="input-group"><label>Enganche (%)</label><input type="number" id="c-enganchePct" value="20" oninput="syncEnganche(); calcular()" /></div>
+                <div class="input-group"><label>Enganche ($)</label><input type="number" id="c-engancheMonto" value="700000" oninput="recalcularPreventa(); calcular()" /></div>
               </div>
-              <div class="input-group">
-                <label>Descuento aplicado (MXN)</label>
-                <input type="number" id="c-descuento" value="300000" min="0" step="10000" oninput="syncPreventa(); calcular()" />
+              <div class="grid grid-cols-3 gap-2">
+                <div class="input-group"><label>Diferido (%)</label><input type="number" id="c-diferirPct" value="50" oninput="syncDiferir(); calcular()" /></div>
+                <div class="input-group"><label>Monto Diferido</label><input type="number" id="c-diferirMonto" value="1750000" oninput="syncDiferirMonto(); calcular()" /></div>
+                <div class="input-group"><label>Meses</label><input type="number" id="c-mesesDiferir" value="24" oninput="recalcularPreventa(); calcular()" /></div>
               </div>
-              <div class="input-group">
-                <label>Precio neto con descuento (MXN)</label>
-                <input type="number" id="c-precioNeto" value="3500000" min="0" step="10000" oninput="calcular()" />
+              <div class="grid grid-cols-2 gap-2">
+                <div class="input-group"><label>Mensualidad ($/mes)</label><input type="number" id="c-montoMensualDif" value="72917" readonly class="bg-slate-100 font-bold text-salo" /></div>
+                <div class="input-group"><label>Contra Entrega (%)</label><input type="number" id="c-entregaPct" value="30" oninput="syncEntrega(); calcular()" /></div>
               </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="input-group">
-                  <label>Apartado (MXN)</label>
-                  <input type="number" id="c-apartado" value="50000" min="0" step="5000" oninput="calcular()" />
-                </div>
-                <div class="input-group">
-                  <label>Enganche (%)</label>
-                  <input type="number" id="c-enganchePct" value="20" min="0" max="100" step="1" oninput="syncEnganche(); calcular()" />
-                </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="input-group"><label>Contra Entrega ($)</label><input type="number" id="c-entregaMonto" value="1050000" oninput="recalcularPreventa(); calcular()" /></div>
+                <div class="input-group"><label>Fecha Entrega</label><input type="date" id="c-fechaEntrega" oninput="calcular()" /></div>
               </div>
-              <div class="input-group">
-                <label>Enganche monto (MXN)</label>
-                <input type="number" id="c-engancheMonto" value="700000" min="0" step="10000" oninput="calcular()" />
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="input-group">
-                  <label>% a diferir</label>
-                  <input type="number" id="c-diferirPct" value="50" min="0" max="100" step="1" oninput="syncDiferir(); calcular()" />
-                </div>
-                <div class="input-group">
-                  <label>Monto a diferir (MXN)</label>
-                  <input type="number" id="c-diferirMonto" value="1750000" min="0" step="10000" oninput="calcular()" />
-                </div>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="input-group">
-                  <label>Meses a diferir</label>
-                  <input type="number" id="c-mesesDiferir" value="24" min="1" max="60" step="1" oninput="calcular()" />
-                </div>
-                <div class="input-group">
-                  <label>Monto mensual diferido (MXN)</label>
-                  <input type="number" id="c-montoMensualDif" value="72917" min="0" step="100" oninput="calcular()" readonly class="bg-slate-100" />
-                </div>
-              </div>
-              <div class="input-group">
-                <label>% / monto contra entrega</label>
-                <div class="grid grid-cols-2 gap-2">
-                  <input type="number" id="c-entregaPct" value="30" min="0" max="100" step="1" oninput="syncEntrega(); calcular()" placeholder="%" />
-                  <input type="number" id="c-entregaMonto" value="1050000" min="0" step="10000" oninput="calcular()" placeholder="Monto" />
-                </div>
-              </div>
-              <div class="input-group">
-                <label>Notas / condiciones especiales</label>
-                <textarea id="c-notas" rows="2" placeholder="Ej. Incluye acabados, estacionamiento, etc."></textarea>
-              </div>
+              <div class="input-group"><label>Notas / Condiciones Especiales</label><textarea id="c-notas" rows="2" placeholder="Notas..."></textarea></div>
             </div>
           </div>
         </div>
 
         <!-- VENDEDOR INPUTS -->
-        <div id="panel-vendedor-inputs" class="hidden space-y-5">
-          <div class="card p-5">
-            <h2 class="section-title mb-4"><i class="fas fa-building text-emerald-500"></i> Datos de la propiedad</h2>
-            <div class="space-y-3">
-              <div class="input-group">
-                <label>Precio de venta (MXN)</label>
-                <input type="number" id="v-precio" value="3500000" min="0" step="10000" oninput="calcular()" />
+        <div id="panel-vendedor-inputs" class="hidden space-y-4">
+          <div class="card p-4">
+            <h2 class="section-title text-sm mb-2"><i class="fas fa-building text-emerald-500"></i> Datos del Inmueble (Venta)</h2>
+            <div class="space-y-2">
+              <div class="input-group"><label>Precio de Venta</label><input type="number" id="v-precio" value="3500000" oninput="calcular()" /></div>
+              <div class="input-group"><label>Precio Compra Original</label><input type="number" id="v-precioCompra" value="2200000" oninput="calcular()" /></div>
+              <div class="grid grid-cols-2 gap-2">
+                <div class="input-group"><label>Años Posesión</label><input type="number" id="v-anosPosesion" value="6" oninput="calcular()" /></div>
+                <div class="input-group"><label>Comisión (%)</label><input type="number" id="v-comision" value="5" oninput="calcular()" /></div>
               </div>
-              <div class="input-group">
-                <label>Precio de adquisición original (MXN)</label>
-                <input type="number" id="v-precioCompra" value="2200000" min="0" step="10000" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Años de posesión</label>
-                <input type="number" id="v-anosPosesion" value="6" min="0" max="50" step="1" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Estado / Zona</label>
-                <select id="v-estado" onchange="calcular()">
-                  <option value="cdmx">Ciudad de México</option>
-                  <option value="jalisco">Jalisco (Guadalajara)</option>
-                  <option value="nuevo_leon">Nuevo León (Monterrey)</option>
-                  <option value="quintana_roo" selected>Quintana Roo (Cancún / Riviera)</option>
-                  <option value="queretaro">Querétaro</option>
-                  <option value="yucatan">Yucatán (Mérida)</option>
-                  <option value="otro">Otro / Promedio nacional</option>
-                </select>
-              </div>
-              <div class="input-group">
-                <label>Tipo de propiedad</label>
-                <select id="v-tipo" onchange="calcular()">
-                  <option value="casa">Casa habitación</option>
-                  <option value="depto">Departamento</option>
-                  <option value="terreno">Terreno</option>
-                  <option value="comercial">Local comercial</option>
-                </select>
-              </div>
-              <div class="flex items-center justify-between mt-2">
-                <span class="text-sm text-slate-600">¿Es vivienda habitación principal?</span>
-                <label class="toggle-switch">
-                  <input type="checkbox" id="v-esHabitacion" checked onchange="calcular()" />
-                  <span class="slider"></span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div class="card p-5">
-            <h2 class="section-title mb-4"><i class="fas fa-file-invoice-dollar text-emerald-500"></i> Costos e impuestos de venta</h2>
-            <div class="space-y-3">
-              <div class="input-group">
-                <label>Comisión inmobiliaria (%)</label>
-                <input type="number" id="v-comision" value="5" min="0" max="15" step="0.1" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>IVA sobre comisión (%)</label>
-                <input type="number" id="v-ivaComision" value="16" min="0" max="16" step="1" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Gastos notariales vendedor (MXN)</label>
-                <input type="number" id="v-notario" value="15000" min="0" step="1000" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Certificados + libertad de gravamen (MXN)</label>
-                <input type="number" id="v-certificados" value="8500" min="0" step="500" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Adeudos pendientes (predial, agua…) (MXN)</label>
-                <input type="number" id="v-adeudos" value="0" min="0" step="500" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Otros gastos del vendedor (MXN)</label>
-                <input type="number" id="v-otros" value="5000" min="0" step="500" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Mejoras documentadas con CFDI (MXN)</label>
-                <input type="number" id="v-mejoras" value="180000" min="0" step="10000" oninput="calcular()" />
-              </div>
-              <div class="input-group">
-                <label>Factor de actualización INPC</label>
-                <input type="number" id="v-factorINPC" value="1.28" min="1" max="3" step="0.01" oninput="calcular()" />
+              <div class="grid grid-cols-2 gap-2">
+                <div class="input-group"><label>Gastos Notario</label><input type="number" id="v-notario" value="15000" oninput="calcular()" /></div>
+                <div class="input-group"><label>Mejoras (CFDI)</label><input type="number" id="v-mejoras" value="180000" oninput="calcular()" /></div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- RESULTADOS PARA PANTALLA Y PDF -->
-      <div class="lg:col-span-8 space-y-5" id="contenedor-resultados-principal">
+      <!-- COLUMNA RESULTADOS (PÁGINA 1 DERECHA + PÁGINA 2 COMPLETA) -->
+      <div class="lg:col-span-8 space-y-4" id="contenedor-resultados-principal">
 
         <!-- RESUMEN COMPRADOR -->
         <div id="resultados-comprador">
-          <div class="card p-5 page-break-after">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="section-title"><i class="fas fa-clipboard-list text-salo"></i> Proforma del Comprador (Página 1)</h2>
-              <span class="text-xs bg-salo-light text-salo-dark px-3 py-1 rounded-full font-medium" id="badge-uso">Uso: Habitar</span>
+          <!-- PÁGINA 1 DERECHA -->
+          <div class="card p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="section-title text-sm"><i class="fas fa-clipboard-list text-salo"></i> Proforma del Comprador</h2>
+              <span class="text-[10px] bg-salo-light text-salo-dark px-2 py-0.5 rounded-full font-medium" id="badge-uso">Uso: Habitar</span>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
               <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Precio de compra</p>
-                <p class="text-lg font-bold text-slate-800" id="rc-precio">$0</p>
+                <p class="text-[10px] text-slate-500 mb-0.5">Precio Compra</p>
+                <p class="text-sm font-bold text-slate-800" id="rc-precio">$0</p>
               </div>
               <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Costos de cierre (7%)</p>
-                <p class="text-lg font-bold text-amber-600" id="rc-cierre">$0</p>
+                <p class="text-[10px] text-slate-500 mb-0.5">Gastos Cierre (7%)</p>
+                <p class="text-sm font-bold text-amber-600" id="rc-cierre">$0</p>
               </div>
               <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Inversión total</p>
-                <p class="text-lg font-bold text-salo" id="rc-inversion">$0</p>
+                <p class="text-[10px] text-slate-500 mb-0.5">Inversión Total</p>
+                <p class="text-sm font-bold text-salo" id="rc-inversion">$0</p>
               </div>
               <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Plusvalía estimada</p>
-                <p class="text-lg font-bold text-emerald-600" id="rc-plusvalia">$0</p>
-              </div>
-            </div>
-
-            <div id="rc-preventa-box" class="hidden mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
-              <h3 class="text-xs font-semibold text-amber-800 mb-2"><i class="fas fa-calendar-alt mr-1"></i> Esquema de pagos (Preventa)</h3>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs" id="rc-preventa-detalle"></div>
-            </div>
-
-            <div id="rc-vivir" class="space-y-3">
-              <h3 class="text-xs font-semibold text-slate-700">Proyección al habitar</h3>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="metric-card">
-                  <p class="text-xs text-slate-500">Mantenimiento mensual</p>
-                  <p class="text-lg font-bold text-slate-800" id="rc-mantMensual">$0</p>
-                </div>
-                <div class="metric-card">
-                  <p class="text-xs text-slate-500">Costo anual de posesión</p>
-                  <p class="text-lg font-bold text-slate-800" id="rc-costoAnual">$0</p>
-                </div>
-                <div class="metric-card">
-                  <p class="text-xs text-slate-500">Valor estimado al final</p>
-                  <p class="text-lg font-bold text-emerald-600" id="rc-valorFinal">$0</p>
-                </div>
+                <p class="text-[10px] text-slate-500 mb-0.5">Plusvalía Est.</p>
+                <p class="text-sm font-bold text-emerald-600" id="rc-plusvalia">$0</p>
               </div>
             </div>
 
-            <div id="rc-rentar" class="hidden space-y-3">
-              <h3 class="text-xs font-semibold text-slate-700">Proyección de renta <span id="rc-tipoRentaLabel"></span></h3>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="metric-card border-l-4 border-l-salo">
-                  <p class="text-xs text-salo-dark font-medium">Ingreso neto ANUAL</p>
-                  <p class="text-xl font-bold text-slate-800" id="rc-netoAnual">$0</p>
-                  <p class="text-xs text-slate-500 mt-1">Cap Rate: <strong id="rc-capRate">0%</strong></p>
-                </div>
-                <div class="metric-card">
-                  <p class="text-xs text-slate-500">Ingreso bruto anual</p>
-                  <p class="text-lg font-bold text-slate-800" id="rc-brutoAnual">$0</p>
-                </div>
-                <div class="metric-card">
-                  <p class="text-xs text-slate-500">Gastos anuales</p>
-                  <p class="text-lg font-bold text-red-600" id="rc-gastosAnuales">$0</p>
-                </div>
+            <!-- DESGLOSE PREVENTA EN LA PROFORMA -->
+            <div id="rc-preventa-box" class="hidden mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <h3 class="text-xs font-semibold text-amber-800 mb-1"><i class="fas fa-calendar-alt mr-1"></i> Esquema de Pagos y Mensualidades (Preventa)</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]" id="rc-preventa-detalle"></div>
+            </div>
+
+            <!-- DESGLOSE HABITAR / RENTA -->
+            <div id="rc-vivir" class="space-y-2">
+              <h3 class="text-xs font-semibold text-slate-700">Proyección de Vivienda</h3>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="metric-card"><p class="text-[10px] text-slate-500">Mant. Mensual</p><p class="text-sm font-bold text-slate-800" id="rc-mantMensual">$0</p></div>
+                <div class="metric-card"><p class="text-[10px] text-slate-500">Costo Posesión/Año</p><p class="text-sm font-bold text-slate-800" id="rc-costoAnual">$0</p></div>
+                <div class="metric-card"><p class="text-[10px] text-slate-500">Valor Final Est.</p><p class="text-sm font-bold text-emerald-600" id="rc-valorFinal">$0</p></div>
               </div>
-              <div class="overflow-x-auto">
-                <table class="w-full text-xs">
-                  <thead>
-                    <tr class="border-b border-slate-200 text-left text-slate-500">
-                      <th class="pb-1 font-medium">Concepto</th>
-                      <th class="pb-1 font-medium text-right">Monto anual</th>
-                    </tr>
-                  </thead>
-                  <tbody id="rc-tablaRenta" class="text-slate-700"></tbody>
-                </table>
+            </div>
+
+            <div id="rc-rentar" class="hidden space-y-2">
+              <h3 class="text-xs font-semibold text-slate-700">Proyección Renta <span id="rc-tipoRentaLabel"></span></h3>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="metric-card border-l-2 border-l-salo"><p class="text-[10px] text-salo-dark font-medium">Neto Anual</p><p class="text-sm font-bold text-slate-800" id="rc-netoAnual">$0</p><p class="text-[9px] text-slate-500">Cap Rate: <strong id="rc-capRate">0%</strong></p></div>
+                <div class="metric-card"><p class="text-[10px] text-slate-500">Bruto Anual</p><p class="text-sm font-bold text-slate-800" id="rc-brutoAnual">$0</p></div>
+                <div class="metric-card"><p class="text-[10px] text-slate-500">Gastos Anuales</p><p class="text-sm font-bold text-red-600" id="rc-gastosAnuales">$0</p></div>
               </div>
             </div>
           </div>
 
-          <!-- PÁGINA 2 COMPRADOR -->
-          <div class="card p-5">
-            <h2 class="section-title mb-3"><i class="fas fa-chart-line text-salo"></i> Análisis de Rendimiento y Gráfica (Página 2)</h2>
-            <div id="grafica-comprador-contenedor" class="mb-4">
-              <div class="chart-container" id="boxChartPlusvalia">
-                <canvas id="chartPlusvalia"></canvas>
-              </div>
-              <div class="chart-container hidden" id="boxChartRenta">
-                <canvas id="chartRenta"></canvas>
-              </div>
+          <!-- SALTO DE PÁGINA OBLIGATORIO -->
+          <div class="page-break-mark"></div>
+
+          <!-- ENCABEZADO SECUNDARIO PÁGINA 2 HORIZONTAL -->
+          <div class="print-header">
+            <div>
+              <h1 class="text-sm font-bold text-slate-900" style="color:#30643E;">Edgardo de Real · Análisis Avanzado (Carta Horizontal)</h1>
+            </div>
+            <div class="text-right">
+              <p class="text-[9px] text-slate-500">Página 2 de 2</p>
+            </div>
+          </div>
+
+          <!-- PÁGINA 2 PDF: GRÁFICA Y DIAGNÓSTICO -->
+          <div class="card p-4">
+            <h2 class="section-title text-sm mb-2"><i class="fas fa-chart-line text-salo"></i> Proyección Visual de Inversión</h2>
+            <div class="chart-container-print mb-2">
+              <div class="chart-container" id="boxChartPlusvalia"><canvas id="chartPlusvalia"></canvas></div>
+              <div class="chart-container hidden" id="boxChartRenta"><canvas id="chartRenta"></canvas></div>
             </div>
 
             <div class="diagnosis-box">
@@ -595,41 +477,28 @@
 
         <!-- RESUMEN VENDEDOR -->
         <div id="resultados-vendedor" class="hidden">
-          <div class="card p-5 page-break-after">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="section-title"><i class="fas fa-calculator text-emerald-500"></i> Net Sheet del Vendedor (Página 1)</h2>
-              <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-medium">Costos de Cierre</span>
+          <div class="card p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="section-title text-sm"><i class="fas fa-calculator text-emerald-500"></i> Net Sheet Vendedor</h2>
+              <span class="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium">Costos Cierre</span>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-              <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Precio de venta</p>
-                <p class="text-lg font-bold text-slate-800" id="rv-precio">$0</p>
-              </div>
-              <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Total costos</p>
-                <p class="text-lg font-bold text-red-600" id="rv-totalCostos">$0</p>
-              </div>
-              <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">% sobre precio</p>
-                <p class="text-lg font-bold text-amber-600" id="rv-pctCostos">0%</p>
-              </div>
-              <div class="metric-card text-center">
-                <p class="text-xs text-slate-500 mb-1">Neto a recibir</p>
-                <p class="text-lg font-bold text-emerald-600" id="rv-neto">$0</p>
-              </div>
+            <div class="grid grid-cols-4 gap-2 mb-2">
+              <div class="metric-card text-center"><p class="text-[10px] text-slate-500">Precio Venta</p><p class="text-sm font-bold text-slate-800" id="rv-precio">$0</p></div>
+              <div class="metric-card text-center"><p class="text-[10px] text-slate-500">Total Costos</p><p class="text-sm font-bold text-red-600" id="rv-totalCostos">$0</p></div>
+              <div class="metric-card text-center"><p class="text-[10px] text-slate-500">% sobre Precio</p><p class="text-sm font-bold text-amber-600" id="rv-pctCostos">0%</p></div>
+              <div class="metric-card text-center"><p class="text-[10px] text-slate-500">Neto a Recibir</p><p class="text-sm font-bold text-emerald-600" id="rv-neto">$0</p></div>
             </div>
 
-            <div class="space-y-2">
-              <h3 class="text-xs font-semibold text-slate-700">Desglose de costos de venta</h3>
-              <div class="space-y-1 text-xs" id="rv-desglose"></div>
-            </div>
+            <div class="space-y-1 text-xs" id="rv-desglose"></div>
           </div>
 
-          <!-- PÁGINA 2 VENDEDOR -->
-          <div class="card p-5">
-            <h2 class="section-title mb-3"><i class="fas fa-pie-chart text-emerald-500"></i> Gráfica de Costos y Diagnóstico (Página 2)</h2>
-            <div class="chart-container mb-4">
+          <!-- SALTO DE PÁGINA VENDEDOR -->
+          <div class="page-break-mark"></div>
+
+          <div class="card p-4">
+            <h2 class="section-title text-sm mb-2"><i class="fas fa-pie-chart text-emerald-500"></i> Gráfica de Costos y Diagnóstico</h2>
+            <div class="chart-container-print mb-2">
               <canvas id="chartCostosV"></canvas>
             </div>
             <div class="diagnosis-box">
@@ -642,7 +511,7 @@
     </div>
   </main>
 
-  <footer class="text-center text-xs text-slate-400 py-6 no-print">
+  <footer class="text-center text-xs text-slate-400 py-4 no-print">
     Calculadora Inmobiliaria Profesional · Datos orientativos México 2026 · Edgardo de Real
   </footer>
 
@@ -651,11 +520,6 @@
     let uso = 'vivir';
     let tipoRenta = 'diaria';
     let chartPlusvalia = null, chartRenta = null, chartCostosV = null;
-
-    const isaiPorEstado = {
-      cdmx: 0.045, jalisco: 0.02, nuevo_leon: 0.03, quintana_roo: 0.02,
-      queretaro: 0.02, yucatan: 0.02, otro: 0.025
-    };
 
     function fmt(n) {
       const num = Number(n) || 0;
@@ -708,7 +572,7 @@
       document.getElementById('renta-fija').classList.toggle('active', t === 'fija');
       document.getElementById('campos-diaria').classList.toggle('hidden', t !== 'diaria');
       document.getElementById('campos-fija').classList.toggle('hidden', t !== 'fija');
-      document.getElementById('rc-tipoRentaLabel').textContent = t === 'diaria' ? '(Diaria / Vacacional)' : '(Mensual / Fija)';
+      document.getElementById('rc-tipoRentaLabel').textContent = t === 'diaria' ? '(Vacacional)' : '(Fija)';
       calcular();
     }
 
@@ -718,32 +582,59 @@
       document.getElementById('rc-preventa-box').classList.toggle('hidden', !on);
     }
 
+    /* LÓGICA DE CÁLCULO DE PREVENTA Y MENSUALIDADES CORREGIDA */
     function syncPreventa() {
       const lista = num('c-precioLista');
       const desc = num('c-descuento');
-      document.getElementById('c-precioNeto').value = Math.max(0, lista - desc);
-      document.getElementById('c-precio').value = Math.max(0, lista - desc);
-      syncEnganche();
-      syncDiferir();
-      syncEntrega();
+      const precioNeto = Math.max(0, lista - desc);
+      document.getElementById('c-precioNeto').value = precioNeto;
+      document.getElementById('c-precio').value = precioNeto;
+      recalcularPreventa();
     }
+
     function syncEnganche() {
       const precio = num('c-precioNeto') || num('c-precio');
       const pctE = num('c-enganchePct') / 100;
       document.getElementById('c-engancheMonto').value = Math.round(precio * pctE);
+      recalcularPreventa();
     }
+
     function syncDiferir() {
       const precio = num('c-precioNeto') || num('c-precio');
       const pctD = num('c-diferirPct') / 100;
-      const monto = Math.round(precio * pctD);
-      document.getElementById('c-diferirMonto').value = monto;
-      const meses = num('c-mesesDiferir') || 1;
-      document.getElementById('c-montoMensualDif').value = Math.round(monto / meses);
+      const montoD = Math.round(precio * pctD);
+      document.getElementById('c-diferirMonto').value = montoD;
+      recalcularPreventa();
     }
+
+    function syncDiferirMonto() {
+      const precio = num('c-precioNeto') || num('c-precio');
+      const montoD = num('c-diferirMonto');
+      if (precio > 0) {
+        document.getElementById('c-diferirPct').value = ((montoD / precio) * 100).toFixed(1);
+      }
+      recalcularPreventa();
+    }
+
     function syncEntrega() {
       const precio = num('c-precioNeto') || num('c-precio');
-      const pctE = num('c-entregaPct') / 100;
-      document.getElementById('c-entregaMonto').value = Math.round(precio * pctE);
+      const pctEnt = num('c-entregaPct') / 100;
+      document.getElementById('c-entregaMonto').value = Math.round(precio * pctEnt);
+      recalcularPreventa();
+    }
+
+    function recalcularPreventa() {
+      const precio = num('c-precioNeto') || num('c-precio');
+      const diferirMonto = num('c-diferirMonto');
+      const meses = num('c-mesesDiferir') || 1;
+
+      // Pago mensual exacto
+      const mensualidad = Math.round(diferirMonto / meses);
+      document.getElementById('c-montoMensualDif').value = mensualidad;
+
+      if (precio > 0) {
+        document.getElementById('c-diferirPct').value = ((diferirMonto / precio) * 100).toFixed(1);
+      }
     }
 
     function calcular() {
@@ -782,16 +673,20 @@
         const apartado = num('c-apartado');
         const enganche = num('c-engancheMonto');
         const diferir = num('c-diferirMonto');
+        const diferirPct = num('c-diferirPct');
         const meses = num('c-mesesDiferir');
         const mensual = num('c-montoMensualDif');
         const entrega = num('c-entregaMonto');
         const fecha = document.getElementById('c-fechaEntrega').value || '—';
+        const notas = document.getElementById('c-notas').value || '';
 
         document.getElementById('rc-preventa-detalle').innerHTML =
-          '<div><p class="text-amber-700 text-xs">Fecha entrega</p><p class="font-semibold">' + fecha + '</p></div>' +
-          '<div><p class="text-amber-700 text-xs">Apartado</p><p class="font-semibold">' + fmt(apartado) + '</p></div>' +
-          '<div><p class="text-amber-700 text-xs">Enganche (' + num('c-enganchePct') + '%)</p><p class="font-semibold">' + fmt(enganche) + '</p></div>' +
-          '<div><p class="text-amber-700 text-xs">Diferido (' + meses + ' m)</p><p class="font-semibold">' + fmt(diferir) + '</p></div>';
+          '<div><p class="text-amber-700 text-[10px]">Fecha Entrega</p><p class="font-semibold">' + fecha + '</p></div>' +
+          '<div><p class="text-amber-700 text-[10px]">Apartado</p><p class="font-semibold">' + fmt(apartado) + '</p></div>' +
+          '<div><p class="text-amber-700 text-[10px]">Enganche (' + num('c-enganchePct') + '%)</p><p class="font-semibold">' + fmt(enganche) + '</p></div>' +
+          '<div><p class="text-amber-700 text-[10px]">Diferido (' + diferirPct + '%)</p><p class="font-semibold text-salo">' + fmt(diferir) + ' <span class="text-[9px]">(' + fmt(mensual) + '/mes x ' + meses + 'm)</span></p></div>' +
+          '<div><p class="text-amber-700 text-[10px]">Contra Entrega (' + num('c-entregaPct') + '%)</p><p class="font-semibold">' + fmt(entrega) + '</p></div>' +
+          '<div class="col-span-3"><p class="text-amber-700 text-[10px]">Notas/Condiciones</p><p class="text-[10px]">' + (notas || '—') + '</p></div>';
       }
 
       if (uso === 'vivir') {
@@ -832,12 +727,6 @@
         document.getElementById('rc-brutoAnual').textContent = fmt(brutoAnual);
         document.getElementById('rc-gastosAnuales').textContent = fmt(comisionAnual + costosOp);
 
-        document.getElementById('rc-tablaRenta').innerHTML =
-          '<tr class="border-b border-slate-100"><td class="py-1">Ingreso bruto anual</td><td class="py-1 text-right font-medium">' + fmt(brutoAnual) + '</td></tr>' +
-          '<tr class="border-b border-slate-100"><td class="py-1">Comisión / administración</td><td class="py-1 text-right text-red-600">-' + fmt(comisionAnual) + '</td></tr>' +
-          '<tr class="border-b border-slate-100"><td class="py-1">Costos operativos</td><td class="py-1 text-right text-red-600">-' + fmt(costosOp) + '</td></tr>' +
-          '<tr class="font-semibold"><td class="py-1">Ingreso neto ANUAL</td><td class="py-1 text-right text-emerald-600">' + fmt(netoAnual) + '</td></tr>';
-
         renderChartRenta(brutoAnual, comisionAnual, costosOp, netoAnual);
         generarDiagnosticoComprador({ uso, tipoRenta, precio, totalCierre, inversionTotal, netoAnual, capRate, brutoAnual, anos, apre, plusvalia, valorFinal, esPreventa });
       }
@@ -847,32 +736,15 @@
       const precio = num('v-precio');
       const precioCompra = num('v-precioCompra');
       const anos = num('v-anosPosesion');
-      const factor = num('v-factorINPC');
-      const mejoras = num('v-mejoras');
       const comisionPct = num('v-comision') / 100;
-      const ivaCom = num('v-ivaComision') / 100;
       const notarioV = num('v-notario');
-      const cert = num('v-certificados');
-      const adeudos = num('v-adeudos');
-      const otros = num('v-otros');
-      const esHab = document.getElementById('v-esHabitacion').checked;
-      const tipo = document.getElementById('v-tipo').value;
+      const mejoras = num('v-mejoras');
 
-      const comisionBase = precio * comisionPct;
-      const ivaComision = comisionBase * ivaCom;
-      const comisionTotal = comisionBase + ivaComision;
+      const comisionTotal = precio * comisionPct * 1.16;
+      const ganancia = Math.max(0, precio - (precioCompra + mejoras));
+      const isr = ganancia * 0.25;
 
-      const costoActualizado = (precioCompra * factor) + mejoras;
-      const ganancia = Math.max(0, precio - costoActualizado);
-
-      const limiteExencion = 6200000;
-      let isr = 0;
-      const esVivienda = (tipo === 'casa' || tipo === 'depto');
-
-      if (esHab && esVivienda && precio <= limiteExencion) isr = 0;
-      else isr = ganancia * 0.25;
-
-      const totalCostos = comisionTotal + notarioV + cert + adeudos + otros + isr;
+      const totalCostos = comisionTotal + notarioV + isr;
       const neto = precio - totalCostos;
       const pctCostos = precio > 0 ? totalCostos / precio : 0;
 
@@ -882,11 +754,9 @@
       document.getElementById('rv-neto').textContent = fmt(neto);
 
       const desglose = [
-        { label: 'Comisión inmobiliaria + IVA', valor: comisionTotal },
-        { label: 'ISR por ganancia', valor: isr },
-        { label: 'Gastos notariales vendedor', valor: notarioV },
-        { label: 'Certificados y gravámenes', valor: cert },
-        { label: 'Adeudos y otros', valor: adeudos + otros }
+        { label: 'Comisión Inmobiliaria + IVA', valor: comisionTotal },
+        { label: 'ISR estimado sobre ganancia', valor: isr },
+        { label: 'Gastos Notariales Vendedor', valor: notarioV }
       ];
 
       let htmlDes = '';
@@ -896,7 +766,7 @@
       document.getElementById('rv-desglose').innerHTML = htmlDes;
 
       renderChartCostosV(desglose.filter(function(d) { return d.valor > 0; }));
-      generarDiagnosticoVendedor({ precio, totalCostos, pctCostos, neto, isr, ganancia, esHab, tipo, anos });
+      generarDiagnosticoVendedor({ precio, totalCostos, pctCostos, neto, isr, ganancia, anos });
     }
 
     function renderChartPlusvalia(labels, valores) {
@@ -918,7 +788,7 @@
         },
         options: {
           responsive: true, maintainAspectRatio: false,
-          plugins: { title: { display: true, text: 'Proyección de Plusvalía (Años)', font: { size: 12 } } },
+          plugins: { title: { display: true, text: 'Proyección de Plusvalía (Años)', font: { size: 11 } } },
           scales: { y: { ticks: { callback: function(v) { return '$' + (v/1000).toFixed(0) + 'k'; } } } }
         }
       });
@@ -931,16 +801,16 @@
       chartRenta = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Bruto', 'Comisión', 'Operativos', 'Neto anual'],
+          labels: ['Bruto', 'Comisión', 'Operativos', 'Neto Anual'],
           datasets: [{
             data: [bruto, comision, op, neto],
             backgroundColor: ['#30643E', '#ef4444', '#f59e0b', '#10b981'],
-            borderRadius: 6
+            borderRadius: 4
           }]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false }, title: { display: true, text: 'Desglose Anual de Renta', font: { size: 12 } } },
+          plugins: { legend: { display: false }, title: { display: true, text: 'Desglose Anual de Renta', font: { size: 11 } } },
           scales: { y: { beginAtZero: true, ticks: { callback: function(v) { return '$' + (v/1000).toFixed(0) + 'k'; } } } }
         }
       });
@@ -954,38 +824,40 @@
         type: 'doughnut',
         data: {
           labels: data.map(function(d) { return d.label; }),
-          datasets: [{ data: data.map(function(d) { return d.valor; }), backgroundColor: ['#30643E','#ef4444','#f59e0b','#8b5cf6','#64748b'], borderWidth: 0 }]
+          datasets: [{ data: data.map(function(d) { return d.valor; }), backgroundColor: ['#30643E','#ef4444','#f59e0b'], borderWidth: 0 }]
         },
         options: {
           responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } }, title: { display: true, text: 'Distribución de Costos de Venta', font: { size: 12 } } }
+          plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 9 } } }, title: { display: true, text: 'Distribución de Costos de Venta', font: { size: 11 } } }
         }
       });
     }
 
     function generarDiagnosticoComprador(d) {
-      let html = '<h3 class="font-bold text-slate-800 text-sm mb-2">Resumen analítico para el cliente</h3>';
-      html += '<p class="text-xs text-slate-700 mb-2">Inversión total estimada: <strong>' + fmt(d.inversionTotal) + '</strong> (precio ' + fmt(d.precio) + ' + gastos de cierre al 7% = ' + fmt(d.totalCierre) + ').</p>';
+      let html = '<h3 class="font-bold text-slate-800 text-xs mb-1">Resumen Analítico para el Cliente</h3>';
+      html += '<p class="text-[11px] text-slate-700 leading-relaxed mb-1">Inversión total requerida: <strong>' + fmt(d.inversionTotal) + '</strong> (Precio neto: ' + fmt(d.precio) + ' + 7% gastos de cierre: ' + fmt(d.totalCierre) + ').';
+      if (d.esPreventa) html += ' <span class="text-amber-700 font-medium">Operación en preventa: los gastos de cierre se liquidan al momento de escriturar.</span>';
+      html += '</p>';
 
       if (d.uso === 'vivir') {
-        html += '<ul class="text-xs text-slate-600 space-y-1 list-disc list-inside mb-2">';
-        html += '<li>Plusvalía estimada a ' + d.anos + ' años: <strong class="positive">' + fmt(d.plusvalia) + '</strong></li>';
-        html += '<li>Valor proyectado final: <strong>' + fmt(d.valorFinal) + '</strong></li>';
-        html += '<li>Costo anual de posesión: <strong>' + fmt(d.costoAnual) + '</strong></li></ul>';
+        html += '<ul class="text-[10px] text-slate-600 space-y-0.5 list-disc list-inside mb-1">';
+        html += '<li>Plusvalía acumulada a ' + d.anos + ' años: <strong class="positive">' + fmt(d.plusvalia) + '</strong></li>';
+        html += '<li>Valor del inmueble al final del periodo: <strong>' + fmt(d.valorFinal) + '</strong></li>';
+        html += '<li>Costo de posesión anual (mantenimiento + predial): <strong>' + fmt(d.costoAnual) + '</strong></li></ul>';
       } else {
-        html += '<ul class="text-xs text-slate-600 space-y-1 list-disc list-inside mb-2">';
-        html += '<li>Ingreso neto anual: <strong class="positive">' + fmt(d.netoAnual) + '</strong></li>';
+        html += '<ul class="text-[10px] text-slate-600 space-y-0.5 list-disc list-inside mb-1">';
+        html += '<li>Flujo de efectivo neto anual: <strong class="positive">' + fmt(d.netoAnual) + '</strong></li>';
         html += '<li>Cap Rate sobre inversión total: <strong>' + pct(d.capRate) + '</strong></li>';
-        html += '<li>Plusvalía adicional a ' + d.anos + ' años: <strong>' + fmt(d.plusvalia) + '</strong></li></ul>';
+        html += '<li>Plusvalía proyectada a ' + d.anos + ' años: <strong>' + fmt(d.plusvalia) + '</strong></li></ul>';
       }
-      html += '<p class="text-xs text-slate-400 italic mt-2">* Cifras orientativas para toma de decisión. Presentado por Edgardo de Real.</p>';
+      html += '<p class="text-[9px] text-slate-400 italic mt-1">* Reporte generado por Edgardo de Real. Cifras orientativas sujetas a validación notarial.</p>';
       document.getElementById('diagnostico-contenido-comprador').innerHTML = html;
     }
 
     function generarDiagnosticoVendedor(d) {
-      let html = '<h3 class="font-bold text-slate-800 text-sm mb-2">Resumen analítico para el vendedor</h3>';
-      html += '<p class="text-xs text-slate-700 mb-2">Al vender en <strong>' + fmt(d.precio) + '</strong>, los costos estimados son <strong>' + fmt(d.totalCostos) + '</strong> (' + pct(d.pctCostos) + '). Neto estimado: <strong class="positive">' + fmt(d.neto) + '</strong>.</p>';
-      html += '<p class="text-xs text-slate-400 italic mt-2">* Cifras orientativas. El cálculo definitivo de impuestos se valida ante notario. Presentado por Edgardo de Real.</p>';
+      let html = '<h3 class="font-bold text-slate-800 text-xs mb-1">Resumen Analítico para el Vendedor</h3>';
+      html += '<p class="text-[11px] text-slate-700 leading-relaxed mb-1">Al realizar la venta en <strong>' + fmt(d.precio) + '</strong>, los gastos e impuestos proyectados ascienden a <strong>' + fmt(d.totalCostos) + '</strong> (' + pct(d.pctCostos) + ' del precio). Retorno neto estimado: <strong class="positive">' + fmt(d.neto) + '</strong>.</p>';
+      html += '<p class="text-[9px] text-slate-400 italic mt-1">* Reporte generado por Edgardo de Real. La determinación definitiva de impuestos la realiza el notario asignado.</p>';
       document.getElementById('diagnostico-contenido-vendedor').innerHTML = html;
     }
 
