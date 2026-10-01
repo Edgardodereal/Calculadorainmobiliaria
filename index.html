@@ -1,1042 +1,486 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Edgardo de Real | Red Inmobiliaria de Networking Estratégico</title>
-    <meta name="description" content="Red Inmobiliaria de Networking Estratégico. Catálogo filtrable en Venta, Renta, Lotes.">
-    <meta name="theme-color" content="#f8fafc">
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    
-    <!-- Tailwind CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Inmobiliaria Profesional - Edgardo de Real</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- jsPDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 
-                            500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 
-                            900: '#134e4a', 950: '#042f2e'
-                        }
-                    },
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: 0, transform: 'translateY(20px)' },
-                            '100%': { opacity: 1, transform: 'translateY(0)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .glass-nav { 
-            background: rgba(255, 255, 255, 0.85); 
-            backdrop-filter: blur(12px); 
-            -webkit-backdrop-filter: blur(12px); 
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05); 
+        body { font-family: 'Inter', sans-serif; }
+        
+        @media print {
+            #appContainer { display: none !important; }
+            #printModal { 
+                display: block !important; 
+                position: relative !important; 
+                background: transparent !important; 
+                padding: 0 !important;
+            }
+            #proformaContent { 
+                box-shadow: none !important; 
+                border: none !important; 
+                max-width: 100% !important; 
+                max-height: none !important; 
+                overflow: visible !important; 
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+            .no-print-modal { display: none !important; }
+            
+            body, html { 
+                background: white !important; 
+                height: auto !important; 
+                margin: 0 !important; 
+                color: black !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
+            @page { margin: 10mm; }
         }
-        .hero-gradient { 
-            background: radial-gradient(circle at top right, rgba(20, 184, 166, 0.1), transparent 40%), 
-                        radial-gradient(circle at bottom left, rgba(20, 184, 166, 0.05), transparent 40%); 
-        }
-        .animate-on-load { opacity: 0; }
-        
-        /* Marquee Infinito real */
-        .marquee { overflow: hidden; position: relative; width: 100%; -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
-        .marquee-track { display: flex; width: max-content; animation: scrollMarquee 35s linear infinite; }
-        .marquee:hover .marquee-track { animation-play-state: paused; }
-        @keyframes scrollMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        
-        .dot-indicator { height: 6px; width: 6px; border-radius: 999px; background: rgba(255,255,255,0.7); transition: all 0.3s ease; }
-        .dot-indicator.is-active { width: 18px; background: #14b8a6; }
-        
-        @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0); } 50% { box-shadow: 0 0 0 8px rgba(20, 184, 166, 0.3); border-color: #14b8a6; } }
-        .rine-highlight { animation: pulseGlow 1.5s ease-in-out 2; border-color: #14b8a6 !important; }
-        
-        .toast-msg { position: fixed; left: 50%; bottom: 2rem; z-index: 100; transform: translate(-50%, 20px); max-width: calc(100% - 32px); padding: 12px 24px; border-radius: 8px; background: #042f2e; color: #fff; font-size: 14px; font-weight: 600; box-shadow: 0 10px 25px rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .toast-msg.show { opacity: 1; transform: translate(-50%, 0); }
     </style>
 </head>
-<body class="font-sans text-slate-800 antialiased bg-slate-50 selection:bg-brand-500 selection:text-white">
+<body class="bg-slate-900 text-slate-100 min-h-full flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-<!-- Navegación -->
-<nav class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-20">
-            <!-- Logo -->
-            <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
-                <div class="w-8 h-8 rounded-lg bg-brand-600 flex items-center justify-center text-white">
-                    <i class="ph-bold ph-buildings text-xl"></i>
+    <!-- Contenedor Principal de la App (Se oculta al imprimir) -->
+    <div id="appContainer" class="flex flex-col min-h-full w-full">
+        <header class="no-print bg-slate-800 border-b border-slate-700 sticky top-0 z-40 shadow-md">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-tr from-indigo-600 to-violet-500 p-2.5 rounded-xl shadow-lg shadow-indigo-500/30">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-white">Edgardo de Real</h1>
+                        <p class="text-xs text-indigo-400 font-medium">Calculadora Inmobiliaria Profesional</p>
+                    </div>
                 </div>
-                <span class="font-bold text-lg tracking-tight text-slate-900">Edgardo de Real <span class="text-brand-600 font-normal">| Red Inmobiliaria</span></span>
-            </div>
-
-            <!-- Links Desktop -->
-            <div class="hidden md:flex space-x-6 items-center">
-                <!-- Dropdown Catálogos -->
-                <div class="relative group">
-                    <button type="button" class="text-sm font-semibold text-slate-700 hover:text-brand-600 flex items-center gap-1.5 py-2 transition-colors">
-                        Catálogo Inmobiliario <i class="ph-bold ph-caret-down text-xs"></i>
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="bg-slate-900 p-1 rounded-xl border border-slate-700 flex">
+                        <button id="modeVendorBtn" onclick="switchMode('vendor')" class="px-4 py-2 text-xs font-semibold rounded-lg transition-all bg-indigo-600 text-white shadow">Modo Vendedor / Preventa</button>
+                        <button id="modeBuyerBtn" onclick="switchMode('buyer')" class="px-4 py-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">Modo Comprador</button>
+                    </div>
+                    <!-- Cambiado: Llama a openPrintModal en lugar de window.print -->
+                    <button onclick="openPrintModal()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                        Vista Previa / Imprimir
                     </button>
-                    <div class="absolute left-0 mt-0 w-64 bg-white border border-slate-100 rounded-xl shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 z-50">
-                        <button type="button" onclick="openModalCatalogosEdgardo()" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600 flex items-center gap-2 transition-colors">
-                            <i class="ph-bold ph-house text-brand-500 text-lg"></i> Catálogo Edgardo de Real
-                        </button>
-                        <button type="button" onclick="openModal('modalNetworking')" class="w-full text-left px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-600 flex items-center gap-2 transition-colors">
-                            <i class="ph-bold ph-users-three text-brand-500 text-lg"></i> Catálogo de la red estratégica
-                        </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-8">
+            <div class="bg-slate-800/80 backdrop-blur border border-slate-700/80 rounded-2xl p-6 shadow-xl space-y-6">
+                <div class="border-b border-slate-700 pb-4 flex justify-between items-center">
+                    <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                        Parámetros de la Operación Inmobiliaria
+                    </h2>
+                    <span id="activeModeLabel" class="text-xs font-semibold px-3 py-1 bg-indigo-900/60 text-indigo-300 rounded-full border border-indigo-700/50">Preventa Activa</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Nombre del Cliente / Inversionista</label>
+                        <input type="text" id="clientName" value="Lic. Alejandro Martínez" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Nombre de la Propiedad / Desarrollo</label>
+                        <input type="text" id="propertyName" value="Torre Aura Sky - Depto 402" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Ubicación / Ciudad</label>
+                        <input type="text" id="propertyLocation" value="Cancún, Quintana Roo" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Valor de Lista / Final (USD / MXN)</label>
+                        <input type="number" id="propertyPrice" value="3500000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
                     </div>
                 </div>
 
-                <!-- Botón de Likes Favoritos -->
-                <button type="button" onclick="openModalFavoritos()" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100 font-semibold text-sm transition-colors">
-                    <i class="ph-fill ph-heart text-rose-500 text-base"></i> Favoritos (<span id="contador-likes">0</span>)
-                </button>
-
-                <div class="flex flex-col">
-                    <a href="https://wa.me/529981550066?text=Hola%20Edgardo%2C%20me%20interesa%20formar%20una%20alianza%20estrat%C3%A9gica%20o%20consultar%20tu%20portafolio." target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-full text-white bg-brand-600 hover:bg-brand-700 hover:shadow-lg hover:shadow-brand-500/30 transition-all active:scale-95 gap-2">
-                        <i class="ph-bold ph-whatsapp-logo text-lg"></i> Contacto Directo
-                    </a>
-                    <span class="text-[10px] text-slate-500 text-center mt-0.5">¿Te interesa sumarte a la red o una propiedad?</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
-
-<!-- Hero Section -->
-<section class="relative pt-32 pb-16 lg:pt-40 lg:pb-20 overflow-hidden hero-gradient">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="text-center max-w-4xl mx-auto animate-on-load animate-fade-in-up">
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.1] mb-6">
-                El networking inmobiliario que <br />
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-teal-400">revoluciona la Riviera Maya.</span>
-            </h1>
-            <p class="mt-4 text-xl text-slate-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-                Plataforma interactiva para formar alianzas estratégicas y consultar nuestro portafolio disponible en Cancún y la Riviera Maya.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="https://wa.me/529981550066?text=Hola%20Edgardo%2C%20me%20interesa%20formar%20una%20alianza%20estrat%C3%A9gica%20o%20consultar%20tu%20portafolio." target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-full text-white bg-slate-900 hover:bg-slate-800 hover:shadow-xl hover:shadow-slate-900/20 transition-all active:scale-95 gap-2">
-                    <i class="ph-bold ph-whatsapp-logo text-lg"></i> Hablar por WhatsApp
-                </a>
-                <button type="button" onclick="scrollToRINE()" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-full text-slate-700 bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all gap-2">
-                    Ver únicamente catálogo de la red <i class="ph-bold ph-arrow-right"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Carrusel Infinito Real (Ubicado entre el Header y las tarjetas) -->
-<section class="py-10 border-y border-slate-200/60 bg-white overflow-hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex justify-between items-center">
-        <div>
-            <h2 class="text-xl font-bold text-slate-900">Propiedades destacadas (<span id="carrousell-count">0</span>)</h2>
-            <p class="text-slate-500 text-xs">Pasa el cursor para pausar el carrusel infinito.</p>
-        </div>
-    </div>
-    <div class="marquee w-full">
-        <div id="carrousell-container" class="marquee-track flex gap-4">
-            <!-- Se duplica mediante JS para lograr el efecto infinito impecable -->
-            <div class="text-slate-400 text-sm py-4 px-4">Cargando carrusel...</div>
-        </div>
-    </div>
-</section>
-
-<!-- Categorías (Tiles) -->
-<section class="py-24 bg-slate-50 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <!-- Venta -->
-            <button type="button" onclick="openModal('modalVenta')" class="text-left bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-brand-100/50 hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <div class="w-14 h-14 rounded-xl bg-brand-50 flex items-center justify-center mb-6 group-hover:bg-brand-600 transition-colors duration-300">
-                    <i class="ph ph-house text-3xl text-brand-600 group-hover:text-white transition-colors"></i>
-                </div>
-                <h4 class="text-xl font-bold text-slate-900 mb-3">Venta</h4>
-                <p class="text-slate-600 text-sm leading-relaxed mb-6 flex-grow">Residencias, villas de lujo y departamentos en entrega inmediata con certeza jurídica.</p>
-                <div class="flex items-center justify-between text-brand-600 font-semibold text-sm w-full pt-4 border-t border-slate-100">
-                    <span>Explorar (<span id="count-Venta">0</span>)</span>
-                    <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </button>
-            
-            <!-- Renta -->
-            <button type="button" onclick="openModal('modalRenta')" class="text-left bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-brand-100/50 hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <div class="w-14 h-14 rounded-xl bg-brand-50 flex items-center justify-center mb-6 group-hover:bg-brand-600 transition-colors duration-300">
-                    <i class="ph ph-key text-3xl text-brand-600 group-hover:text-white transition-colors"></i>
-                </div>
-                <h4 class="text-xl font-bold text-slate-900 mb-3">Renta Residencial</h4>
-                <p class="text-slate-600 text-sm leading-relaxed mb-6 flex-grow">Opciones seleccionadas para renta a largo plazo en las ubicaciones más cotizadas.</p>
-                <div class="flex items-center justify-between text-brand-600 font-semibold text-sm w-full pt-4 border-t border-slate-100">
-                    <span>Explorar (<span id="count-Renta">0</span>)</span>
-                    <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </button>
-
-            <!-- Lotes -->
-            <button type="button" onclick="openModal('modalLotes')" class="text-left bg-white rounded-2xl p-8 border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-brand-100/50 hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <div class="w-14 h-14 rounded-xl bg-brand-50 flex items-center justify-center mb-6 group-hover:bg-brand-600 transition-colors duration-300">
-                    <i class="ph ph-map-trifold text-3xl text-brand-600 group-hover:text-white transition-colors"></i>
-                </div>
-                <h4 class="text-xl font-bold text-slate-900 mb-3">Lotes & Macrolotes</h4>
-                <p class="text-slate-600 text-sm leading-relaxed mb-6 flex-grow">Suelo estratégico escriturado desde 220 m² hasta macrolotes para desarrollo.</p>
-                <div class="flex items-center justify-between text-brand-600 font-semibold text-sm w-full pt-4 border-t border-slate-100">
-                    <span>Explorar (<span id="count-Lotes">0</span>)</span>
-                    <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </button>
-
-            <!-- Networking (RINE) -->
-            <button type="button" id="card-rine" onclick="openModal('modalNetworking')" class="text-left bg-white rounded-2xl p-8 border border-brand-200 shadow-sm hover:shadow-xl hover:shadow-brand-100/50 hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full relative focus:outline-none focus:ring-2 focus:ring-brand-500">
-                <div class="absolute -top-3 -right-3 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md"><i class="ph-fill ph-star mr-1"></i>Top</div>
-                <div class="w-14 h-14 rounded-xl bg-brand-50 flex items-center justify-center mb-6 group-hover:bg-brand-600 transition-colors duration-300">
-                    <i class="ph ph-users-three text-3xl text-brand-600 group-hover:text-white transition-colors"></i>
-                </div>
-                <h4 class="text-xl font-bold text-slate-900 mb-3">Propiedades de la red de networking</h4>
-                <p class="text-slate-600 text-sm leading-relaxed mb-6 flex-grow">Encuentra la propiedad perfecta de nuestra red de agentes que te ayudará a concretar la operación que tienes entre las manos.</p>
-                <div class="flex items-center justify-between text-brand-600 font-semibold text-sm w-full pt-4 border-t border-slate-100">
-                    <span>Catalogo de la Red (<span id="count-Networking">0</span>)</span>
-                    <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                </div>
-            </button>
-        </div>
-    </div>
-</section>
-
-<!-- Modal: Selector de Catálogos de Edgardo -->
-<div id="modalCatalogosEdgardo" class="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden" role="dialog" aria-modal="true" onclick="if(event.target===this)closeModal('modalCatalogosEdgardo')">
-  <div class="flex flex-col w-full max-w-xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-fade-in-up p-6">
-    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-      <h3 class="text-xl font-bold text-slate-900">Catálogos de Edgardo de Real</h3>
-      <button type="button" onclick="closeModal('modalCatalogosEdgardo')" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg"><i class="ph-bold ph-x text-xl"></i></button>
-    </div>
-    <div class="grid grid-cols-1 gap-4">
-      <button type="button" onclick="closeModal('modalCatalogosEdgardo'); openModal('modalVenta');" class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 transition-all text-left group">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xl"><i class="ph-bold ph-house"></i></div>
-          <div><h4 class="font-bold text-slate-900 group-hover:text-brand-600">Propiedades en Venta</h4><p class="text-xs text-slate-500">Residencias y villas de lujo</p></div>
-        </div>
-        <i class="ph-bold ph-arrow-right text-slate-400 group-hover:text-brand-600"></i>
-      </button>
-      <button type="button" onclick="closeModal('modalCatalogosEdgardo'); openModal('modalRenta');" class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 transition-all text-left group">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xl"><i class="ph-bold ph-key"></i></div>
-          <div><h4 class="font-bold text-slate-900 group-hover:text-brand-600">Renta Residencial</h4><p class="text-xs text-slate-500">Opciones a largo plazo</p></div>
-        </div>
-        <i class="ph-bold ph-arrow-right text-slate-400 group-hover:text-brand-600"></i>
-      </button>
-      <button type="button" onclick="closeModal('modalCatalogosEdgardo'); openModal('modalLotes');" class="flex items-center justify-between p-4 rounded-xl border border-slate-200 hover:border-brand-500 hover:bg-brand-50/50 transition-all text-left group">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center text-xl"><i class="ph-bold ph-map-trifold"></i></div>
-          <div><h4 class="font-bold text-slate-900 group-hover:text-brand-600">Lotes & Macrolotes</h4><p class="text-xs text-slate-500">Suelo estratégico</p></div>
-        </div>
-        <i class="ph-bold ph-arrow-right text-slate-400 group-hover:text-brand-600"></i>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal: Favoritos (Likes) -->
-<div id="modalFavoritos" class="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden" role="dialog" aria-modal="true" onclick="if(event.target===this)closeModal('modalFavoritos')">
-  <div class="flex flex-col w-full max-w-4xl h-[85vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-fade-in-up">
-    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white">
-      <div class="flex items-center gap-2">
-        <i class="ph-fill ph-heart text-rose-500 text-2xl"></i>
-        <h3 class="text-xl font-bold text-slate-900">Mis Propiedades Favoritas</h3>
-      </div>
-      <button type="button" onclick="closeModal('modalFavoritos')" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg"><i class="ph-bold ph-x text-xl"></i></button>
-    </div>
-    <div id="grid-favoritos" class="flex-1 overflow-y-auto p-6 bg-slate-50 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 custom-scrollbar">
-      <!-- Inyectado dinámicamente -->
-    </div>
-  </div>
-</div>
-
-<!-- Modal Detalle Único Ficha -->
-<div id="modalDetalleUnico" class="modal-backdrop fixed inset-0 z-[70] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm hidden" role="dialog" aria-modal="true" onclick="if(event.target===this)closeModal('modalDetalleUnico')">
-  <div class="flex flex-col w-full max-w-5xl h-full max-h-[92vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-fade-in-up">
-    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white flex-shrink-0">
-      <h2 class="text-brand-600 text-xs font-bold uppercase tracking-wider">Ficha técnica detallada</h2>
-      <button type="button" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors close" onclick="closeModal('modalDetalleUnico')">
-        <i class="ph-bold ph-x text-xl"></i>
-      </button>
-    </div>
-    <div id="contenidoDetalleUnico" class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50/50 custom-scrollbar"></div>
-  </div>
-</div>
-
-<!-- Footer -->
-<footer class="bg-slate-900 pt-16 pb-8 border-t border-slate-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row justify-between items-start gap-8 mb-12">
-            <div class="col-span-1">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center text-white">
-                        <i class="ph-bold ph-buildings text-xl"></i>
+                <!-- Parámetros Avanzados Preventa / Comprador -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-slate-700/60">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Descuento Preventa (%)</label>
+                        <input type="number" id="presaleDiscount" value="12" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
                     </div>
-                    <span class="font-bold text-xl text-white">RINE<span class="text-brand-500">Net</span></span>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Enganche / Anticipo (%)</label>
+                        <input type="number" id="downPaymentPercent" value="30" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Plazo Mensualidades (Meses)</label>
+                        <input type="number" id="monthsTerm" value="24" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Plusvalía Anual Estimada (%)</label>
+                        <input type="number" id="annualAppreciation" value="8" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">ROI / Tasa de Retorno Esperada (%)</label>
+                        <input type="number" id="expectedRoi" value="14.5" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500" oninput="updateReport()">
+                    </div>
                 </div>
-                <p class="text-slate-400 text-sm max-w-sm">La red de agentes inmobiliarios que está acelerando las conexiones en la Riviera Maya. Vende simple, seguro, y efectivo.</p>
             </div>
+
+            <div class="space-y-12">
+                <!-- ================= PÁGINA 1 ORIGINAL ================= -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl flex flex-col justify-between">
+                    <div class="flex justify-between items-start border-b border-slate-700 pb-6">
+                        <div>
+                            <div class="text-xs uppercase tracking-widest text-indigo-400 font-semibold mb-1">Asesoría Inmobiliaria de Alto Rendimiento</div>
+                            <h2 class="text-2xl font-bold text-white">Edgardo de Real</h2>
+                            <p class="text-xs text-slate-400 mt-1">Reporte Ejecutivo de Inversión y Estructura Financiera</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs font-medium text-slate-400">Fecha de Emisión: <span id="currentDate" class="text-white"></span></div>
+                            <div class="text-xs font-medium text-slate-400 mt-1">Folio Operación: <span class="text-indigo-400 font-mono">EDR-2026-X9</span></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-700">
+                            <h3 class="text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-3">Datos del Cliente</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-slate-400">Nombre:</span> <span id="displayClientName" class="font-semibold text-white">Lic. Alejandro Martínez</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Estatus:</span> <span class="text-emerald-400 font-medium">Inversionista Calificado</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Perfil:</span> <span class="text-white">Crecimiento y Plusvalía Patrimonial</span></div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-700">
+                            <h3 class="text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-3">Datos Generales de la Propiedad</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-slate-400">Desarrollo:</span> <span id="displayPropertyName" class="font-semibold text-white">Torre Aura Sky - Depto 402</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Ubicación:</span> <span id="displayPropertyLocation" class="text-white">Cancún, Quintana Roo</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Valor Comercial Lista:</span> <span id="displayPropertyListPrice" class="font-semibold text-white">$3,500,000</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            Desglose Completo y Estructura de Preventa
+                        </h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-center">
+                                <span class="text-xs text-slate-400 block mb-1">Precio con Descuento</span>
+                                <span id="presaleFinalPrice" class="text-lg font-bold text-emerald-400">$3,080,000</span>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-center">
+                                <span class="text-xs text-slate-400 block mb-1">Ahorro Preventa</span>
+                                <span id="presaleSavings" class="text-lg font-bold text-indigo-400">$420,000</span>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-center">
+                                <span class="text-xs text-slate-400 block mb-1">Monto Enganche (30%)</span>
+                                <span id="downPaymentAmount" class="text-lg font-bold text-white">$924,000</span>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 text-center">
+                                <span class="text-xs text-slate-400 block mb-1">Mensualidad (24 Meses)</span>
+                                <span id="monthlyPayment" class="text-lg font-bold text-violet-400">$90,300</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= PÁGINA 2 ORIGINAL ================= -->
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl flex flex-col justify-between">
+                    <div class="flex justify-between items-center border-b border-slate-700 pb-4">
+                        <div class="text-sm font-bold text-white">Edgardo de Real <span class="text-xs text-indigo-400 font-normal">| Proforma del Comprador y Diagnóstico</span></div>
+                        <div class="text-xs text-slate-400">Cliente: <span id="headerClientPage2" class="text-white font-medium">Lic. Alejandro Martínez</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 my-4">
+                        <div class="lg:col-span-2 space-y-4">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                Proforma Financiera del Comprador
+                            </h3>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3 text-sm">
+                                <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-slate-400">Inversión Inicial Total (Enganche + Gastos):</span> <span id="totalInitialInvestment" class="font-bold text-white">$980,000</span></div>
+                                <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-slate-400">Plusvalía Proyectada (A 2 Años):</span> <span id="projectedAppreciation" class="font-bold text-emerald-400">$582,400</span></div>
+                                <div class="flex justify-between py-1 border-b border-slate-800"><span class="text-slate-400">Valor Estimado al Escriturar:</span> <span id="estimatedFutureValue" class="font-bold text-indigo-400">$4,082,400</span></div>
+                                <div class="flex justify-between py-1"><span class="text-slate-400">ROI Estimado Anualizado:</span> <span id="displayRoi" class="font-bold text-violet-400">14.5%</span></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 flex flex-col justify-center items-center">
+                            <span class="text-xs text-slate-400 mb-2 font-medium">Distribución de Capital</span>
+                            <div class="w-36 h-36 relative">
+                                <canvas id="financialChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/90 p-5 rounded-xl border border-indigo-500/30 space-y-3 my-2">
+                        <h3 class="text-sm font-bold text-indigo-300 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Diagnóstico y Recomendación Estratégica de Edgardo de Real
+                        </h3>
+                        <p id="diagnosticText" class="text-xs text-slate-300 leading-relaxed">
+                            La presente estructura de preventa representa una oportunidad excepcional de entrada con un descuento del 12.0%, asegurando un rendimiento estimado muy por encima de la media del mercado.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="printModal" class="fixed inset-0 z-[100] hidden bg-black/80 flex items-center justify-center p-4 sm:p-6 no-print-modal">
+        <div id="proformaContent" class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl relative text-slate-800 flex flex-col">
             
-            <div class="text-left md:text-right">
-                <h4 class="text-white font-bold text-lg mb-2">Edgardo de Real</h4>
-                <p class="text-slate-400 text-sm mb-4">Cancún, Quintana Roo.</p>
-                <div class="flex gap-4 md:justify-end">
-                    <a href="https://www.instagram.com/edgardodereal_/" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-white transition-colors" aria-label="Instagram"><i class="ph-fill ph-instagram-logo text-2xl"></i></a>
-                    <a href="https://gruposalo.com" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-white transition-colors" aria-label="Grupo Salo"><i class="ph-fill ph-globe text-2xl"></i></a>
+            <!-- Botón Cerrar (Solo Web) -->
+            <button onclick="closePrintModal()" class="no-print-modal absolute top-4 right-4 text-white hover:text-gray-200 transition-colors bg-teal-600/50 hover:bg-teal-700/80 rounded-full p-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <!-- Encabezado Proforma -->
+            <div class="bg-teal-500 text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center rounded-t-xl gap-4">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-wider uppercase">Proforma Inmobiliaria</h2>
+                    <p class="text-teal-100 text-sm mt-1 font-medium">Cotización Oficial de Inversión</p>
+                </div>
+                <div class="text-left sm:text-right">
+                    <h1 class="font-bold text-xl">Edgardo de Real</h1>
+                    <p class="text-sm text-teal-100 font-medium">RINE - Registro Inmobiliario</p>
+                    <p class="text-sm text-teal-100">Cancún, Quintana Roo</p>
                 </div>
             </div>
-        </div>
-        <div class="border-t border-slate-800 pt-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-slate-500 text-sm">© 2026 Red Inmobiliaria de Networking Estratégico. Todos los derechos reservados. | By Edgardo de Real</p>
+
+            <!-- Datos Generales -->
+            <div class="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-8 border-b border-gray-200 bg-gray-50">
+                <div>
+                    <h3 class="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2 border-b border-gray-200 pb-1">Datos del Cliente</h3>
+                    <p class="font-bold text-xl text-gray-800 mt-2" id="modalClientName">-</p>
+                    <p class="text-sm text-gray-500 font-medium">Inversionista Calificado</p>
+                </div>
+                <div>
+                    <h3 class="text-xs font-bold text-teal-600 uppercase tracking-wider mb-2 border-b border-gray-200 pb-1">Asesor Asignado</h3>
+                    <p class="font-bold text-xl text-gray-800 mt-2">Edgardo de Real</p>
+                    <p class="text-sm text-gray-500 font-medium">Consultor Patrimonial</p>
+                    <p class="text-sm text-gray-500 mt-1">Fecha Emisión: <span id="modalDate" class="font-semibold"></span></p>
+                </div>
+            </div>
+
+            <!-- Tabla de Costos -->
+            <div class="p-6 sm:p-8 flex-1">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-teal-50 text-teal-800 border-b-2 border-teal-500">
+                            <th class="py-3 px-4 font-bold text-sm uppercase">Concepto</th>
+                            <th class="py-3 px-4 font-bold text-sm text-right uppercase">Detalle</th>
+                            <th class="py-3 px-4 font-bold text-sm text-right uppercase">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-4 px-4 font-semibold text-gray-800">Propiedad / Desarrollo</td>
+                            <td class="py-4 px-4 text-right" id="modalPropertyName">-</td>
+                            <td class="py-4 px-4 text-right font-semibold" id="modalPropertyListPrice">-</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50 bg-green-50/30">
+                            <td class="py-4 px-4 font-semibold text-gray-800">Descuento Preventa Aplicado</td>
+                            <td class="py-4 px-4 text-right text-green-600 font-bold" id="modalDiscountPercent">-</td>
+                            <td class="py-4 px-4 text-right text-green-600 font-bold" id="modalDiscountAmount">-</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 bg-teal-50/50">
+                            <td class="py-4 px-4 font-bold text-teal-800">Precio Final Pactado</td>
+                            <td class="py-4 px-4 text-right text-teal-800 font-medium">Valor Operación</td>
+                            <td class="py-4 px-4 text-right text-teal-800 font-bold text-lg" id="modalFinalPrice">-</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-4 px-4 font-semibold text-gray-800">Enganche / Anticipo</td>
+                            <td class="py-4 px-4 text-right text-gray-500" id="modalDownpaymentPercent">-</td>
+                            <td class="py-4 px-4 text-right font-semibold" id="modalDownPayment">-</td>
+                        </tr>
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-4 px-4 font-semibold text-gray-800">Esquema de Pagos Mensuales</td>
+                            <td class="py-4 px-4 text-right text-gray-500" id="modalMonths">-</td>
+                            <td class="py-4 px-4 text-right font-semibold" id="modalMonthlyPayment">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer Totales y Diagnóstico -->
+            <div class="p-6 sm:p-8 bg-gray-50 flex flex-col md:flex-row justify-between items-stretch gap-6 border-t border-gray-200">
+                <div class="flex-1">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Diagnóstico y Notas de la Operación</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed bg-white p-4 rounded border border-gray-200 shadow-sm" id="modalDiagnostic">-</p>
+                </div>
+                <div class="bg-teal-500 text-white p-6 rounded-xl shadow-lg text-right w-full md:w-1/3 flex flex-col justify-center border-b-4 border-teal-700">
+                    <p class="text-teal-100 text-xs font-semibold uppercase tracking-wider mb-2">Inversión Inicial Total</p>
+                    <p class="text-3xl sm:text-4xl font-bold tracking-tighter" id="modalTotalInitial">-</p>
+                </div>
+            </div>
+
+            <!-- Botones Acción Modal (Solo Web) -->
+            <div class="no-print-modal p-4 sm:p-6 border-t border-gray-200 flex justify-end gap-3 bg-white rounded-b-xl">
+                <button onclick="closePrintModal()" class="px-5 py-2.5 rounded-lg font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors text-sm">Cancelar</button>
+                <button onclick="window.print()" class="px-5 py-2.5 rounded-lg font-semibold text-white bg-teal-500 hover:bg-teal-600 transition-colors shadow-lg shadow-teal-500/30 flex items-center gap-2 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    Confirmar e Imprimir
+                </button>
+            </div>
         </div>
     </div>
-</footer>
 
-<div id="toast" class="toast-msg" role="status" aria-live="polite"></div>
+    <script>
+        let financialChartInstance = null;
+        let currentMode = 'vendor';
 
-<!-- Generación Dinámica de Modales de Categoría -->
-<script>
-  function crearModalHTML(idModal, tituloModal, subtituloModal) {
-    const pestana = idModal.replace('modal', '');
-    return `
-      <div id="${idModal}" class="modal-backdrop fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-6 bg-slate-900/60 backdrop-blur-sm hidden" role="dialog" aria-modal="true" onclick="if(event.target===this)closeModal('${idModal}')">
-        <div class="flex flex-col w-full max-w-7xl h-full max-h-[92vh] bg-white rounded-2xl shadow-2xl overflow-hidden animate-fade-in-up">
-          
-          <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-white flex-shrink-0">
-            <div>
-              <span class="text-brand-600 text-xs font-bold uppercase tracking-wider">${subtituloModal}</span>
-              <h2 class="text-2xl font-bold text-slate-900">${tituloModal}</h2>
-            </div>
-            <button type="button" onclick="closeModal('${idModal}')" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors close">
-              <i class="ph-bold ph-x text-xl"></i>
-            </button>
-          </div>
+        function switchMode(mode) {
+            currentMode = mode;
+            const vendorBtn = document.getElementById('modeVendorBtn');
+            const buyerBtn = document.getElementById('modeBuyerBtn');
+            const modeLabel = document.getElementById('activeModeLabel');
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 p-4 bg-slate-50 border-b border-slate-100 flex-shrink-0">
-            <div class="lg:col-span-2 relative">
-              <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-              <input type="search" id="search-${pestana}" oninput="aplicarFiltros('${pestana}')" placeholder="Buscar por nombre o zona" class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-500 outline-none text-sm transition-all" autocomplete="off" />
-            </div>
-            <select id="tipo-${pestana}" onchange="aplicarFiltros('${pestana}')" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-500 text-sm outline-none bg-white cursor-pointer transition-all">
-                <option value="">Todos los tipos</option>
-                <option value="Casa">Casas / Villas</option>
-                <option value="Departamento">Departamentos</option>
-                <option value="Terreno">Lotes / Terrenos</option>
-                <option value="Bodega">Bodegas</option>
-            </select>
-            <input type="number" id="precioMin-${pestana}" oninput="aplicarFiltros('${pestana}')" placeholder="Precio mín. ($)" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-500 text-sm outline-none transition-all" />
-            <input type="number" id="precioMax-${pestana}" oninput="aplicarFiltros('${pestana}')" placeholder="Precio máx. ($)" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-500 text-sm outline-none transition-all" />
-            <select id="orden-${pestana}" onchange="aplicarFiltros('${pestana}')" class="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-500 text-sm outline-none bg-white cursor-pointer transition-all">
-                <option value="recientes">Predeterminado</option>
-                <option value="precio-desc">Mayor precio</option>
-                <option value="precio-asc">Menor precio</option>
-                <option value="m2-desc">Mayor M²</option>
-            </select>
-          </div>
-
-          <div class="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50/50 custom-scrollbar">
-            <div id="grid-${pestana}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="col-span-full text-center py-10 text-slate-500">
-                    <i class="ph-bold ph-spinner animate-spin text-4xl mb-3 text-brand-500 inline-block"></i><br>Cargando propiedades...
-                </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-slate-100 bg-white gap-4 flex-shrink-0">
-            <span id="info-paginacion-${pestana}" class="text-sm text-slate-500 font-medium">Mostrando 0 propiedades</span>
-            <div class="flex items-center gap-2">
-              <button type="button" id="btn-prev-${pestana}" onclick="cambiarPagina('${pestana}', -1)" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-brand-600 hover:border-brand-200 disabled:opacity-50 transition-colors text-sm font-semibold">Anterior</button>
-              <span id="num-pagina-${pestana}" class="font-bold text-brand-600 min-w-[32px] text-center text-lg">1</span>
-              <button type="button" id="btn-next-${pestana}" onclick="cambiarPagina('${pestana}', 1)" class="px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-brand-600 hover:border-brand-200 disabled:opacity-50 transition-colors text-sm font-semibold">Siguiente</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  document.write(crearModalHTML('modalVenta', 'Propiedades en Venta', 'Catálogo Venta'));
-  document.write(crearModalHTML('modalRenta', 'Renta Residencial', 'Catálogo Renta'));
-  document.write(crearModalHTML('modalLotes', 'Lotes & Macrolotes', 'Suelo Estratégico'));
-  document.write(crearModalHTML('modalNetworking', 'Propiedades de la red de networking', 'Catálogo de la Red'));
-</script>
-
-<!-- LÓGICA MOTOR (Sheets, Filtros, Renderizado, Likes, PDF) -->
-<script>
-  const SHEET_ID = '192oLS5Pqh5IBrMYlp2RbE6ASol8BrHh9Naacegjzva8';
-  const SHEETS_MAPPING = { 'Venta': 'Venta', 'Renta': 'Renta', 'Lotes': 'Lotes', 'Networking': 'red inmobiliaria de networking estrategico' };
-  const ITEMS_POR_PAGINA = 18;
-
-  let catalogoOriginal = { Venta: [], Renta: [], Lotes: [], Networking: [] };
-  let catalogoFiltrado = { Venta: [], Renta: [], Lotes: [], Networking: [] };
-  let paginaActual = { Venta: 1, Renta: 1, Lotes: 1, Networking: 1 };
-  let carrousellOriginal = [];
-
-  let fotoActualIndex = {};
-  let favoritosIds = JSON.parse(localStorage.getItem('rine_favoritos') || '[]');
-  let ultimoFoco = null;
-  let toastTimer = null;
-
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', () => {
-      if (window.scrollY > 10) navbar.classList.add('shadow-sm');
-      else navbar.classList.remove('shadow-sm');
-  });
-
-  function mostrarToast(msg) {
-    const t = document.getElementById('toast');
-    if (!t) return;
-    t.innerHTML = `<div class="flex items-center gap-2"><i class="ph-bold ph-info text-xl text-brand-400"></i> ${msg}</div>`;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
-  }
-
-  function openModal(id) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    ultimoFoco = document.activeElement;
-    el.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
-  
-  function closeModal(id) {
-    const el = document.getElementById(id);
-    if(el) el.classList.add('hidden');
-    const hayModalesAbiertos = document.querySelectorAll('.modal-backdrop:not(.hidden)').length > 0;
-    if (!hayModalesAbiertos) {
-      document.body.style.overflow = '';
-      if (ultimoFoco && ultimoFoco.focus) ultimoFoco.focus();
-    }
-  }
-
-  function openModalCatalogosEdgardo() { openModal('modalCatalogosEdgardo'); }
-
-  function toggleFavorito(idPropiedad) {
-    const index = favoritosIds.indexOf(idPropiedad);
-    if (index > -1) {
-      favoritosIds.splice(index, 1);
-      mostrarToast('Propiedad eliminada de favoritos');
-    } else {
-      favoritosIds.push(idPropiedad);
-      mostrarToast('Propiedad guardada en favoritos');
-    }
-    localStorage.setItem('rine_favoritos', JSON.stringify(favoritosIds));
-    actualizarContadorLikes();
-    
-    // Actualizar grids abiertos si aplica
-    Object.keys(SHEETS_MAPPING).forEach(k => { if(document.getElementById(`modal${k}`) && !document.getElementById(`modal${k}`).classList.contains('hidden')) aplicarFiltros(k); });
-    if(!document.getElementById('modalFavoritos').classList.contains('hidden')) renderizarFavoritos();
-  }
-
-  function actualizarContadorLikes() {
-    const span = document.getElementById('contador-likes');
-    if(span) span.innerText = favoritosIds.length;
-  }
-
-  function openModalFavoritos() {
-    renderizarFavoritos();
-    openModal('modalFavoritos');
-  }
-
-  function renderizarFavoritos() {
-    const container = document.getElementById('grid-favoritos');
-    if(!container) return;
-
-    let todas = [];
-    Object.keys(catalogoOriginal).forEach(k => {
-      catalogoOriginal[k].forEach(item => {
-        const idUnico = item.id || item.titulo;
-        if(favoritosIds.includes(idUnico) && !todas.some(x => (x.id || x.titulo) === idUnico)) {
-          todas.push(item);
+            if (mode === 'vendor') {
+                vendorBtn.className = "px-4 py-2 text-xs font-semibold rounded-lg transition-all bg-indigo-600 text-white shadow";
+                buyerBtn.className = "px-4 py-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white";
+                modeLabel.innerText = "Modo Vendedor / Preventa";
+            } else {
+                buyerBtn.className = "px-4 py-2 text-xs font-semibold rounded-lg transition-all bg-indigo-600 text-white shadow";
+                vendorBtn.className = "px-4 py-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white";
+                modeLabel.innerText = "Modo Comprador";
+            }
+            updateReport();
         }
-      });
-    });
 
-    if(todas.length === 0) {
-      container.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 bg-white rounded-2xl border border-slate-200"><i class="ph-bold ph-heart text-4xl text-rose-300 mb-3 block"></i><h3 class="text-lg font-bold text-slate-800">No tienes favoritos aún</h3><p>Da clic en el icono de corazón en cualquier propiedad para guardarla aquí.</p></div>`;
-      return;
-    }
+        function formatCurrency(val) {
+            return '$' + Number(val).toLocaleString('es-MX', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
 
-    container.innerHTML = todas.map((item, idx) => {
-      const fotos = extraerTodasLasFotos(item);
-      const precioVal = obtenerPrecioItem(item);
-      const ubic = item.ubicación || item.ubicacion || 'Cancún';
-      const idUnico = item.id || item.titulo;
+        function updateReport() {
+            // Obtener valores de inputs
+            const clientName = document.getElementById('clientName').value;
+            const propertyName = document.getElementById('propertyName').value;
+            const propertyLocation = document.getElementById('propertyLocation').value;
+            const propertyPrice = parseFloat(document.getElementById('propertyPrice').value) || 0;
+            const presaleDiscount = parseFloat(document.getElementById('presaleDiscount').value) || 0;
+            const downPaymentPercent = parseFloat(document.getElementById('downPaymentPercent').value) || 0;
+            const monthsTerm = parseInt(document.getElementById('monthsTerm').value) || 1;
+            const annualAppreciation = parseFloat(document.getElementById('annualAppreciation').value) || 0;
+            const expectedRoi = parseFloat(document.getElementById('expectedRoi').value) || 0;
 
-      return `
-      <article class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
-        <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-          ${fotos[0] ? `<img src="${fotos[0]}" class="w-full h-full object-cover" />` : '<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="ph ph-image-broken text-4xl"></i></div>'}
-          <button type="button" onclick="toggleFavorito('${idUnico}')" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 text-rose-500 shadow flex items-center justify-center"><i class="ph-fill ph-heart text-xl"></i></button>
-        </div>
-        <div class="p-4 flex flex-col flex-grow">
-          <p class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">${ubic}</p>
-          <h3 class="text-base font-bold text-slate-900 mb-1 line-clamp-1">${item.titulo}</h3>
-          <p class="text-lg font-extrabold text-brand-600 mb-3">${precioVal}</p>
-          <button type="button" onclick="closeModal('modalFavoritos'); abrirFichaDetallePorObjeto(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="mt-auto py-2 px-4 rounded-lg bg-slate-100 text-slate-700 font-semibold text-xs hover:bg-slate-200">Ver ficha completa</button>
-        </div>
-      </article>`;
-    }).join('');
-  }
-
-  function abrirFichaDetallePorObjeto(item) {
-    // Buscar en que categoría recae o abrir directo
-    abrirFichaDetalleConItem(item);
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    const abiertos = document.querySelectorAll('.modal-backdrop:not(.hidden)');
-    if (abiertos.length) closeModal(abiertos[abiertos.length - 1].id);
-  });
-
-  function scrollToRINE() {
-    const card = document.getElementById('card-rine');
-    if (card) {
-      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      card.classList.add('rine-highlight');
-      setTimeout(() => card.classList.remove('rine-highlight'), 3000);
-    }
-  }
-
-  function formatearUrlImagen(url) {
-    if (!url) return '';
-    url = url.trim();
-    if (url.includes('drive.google.com')) {
-      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
-    }
-    return url;
-  }
-
-  function obtenerPrecioItem(item) {
-    if (!item) return 'Consultar';
-    let raw = '';
-    for (const key in item) {
-      const k = key.toLowerCase().trim();
-      if (k.includes('precio') || k.includes('renta') || k.includes('costo') || k.includes('valor') || k.includes('monto')) {
-        if (item[key] && item[key].trim().length > 0) { raw = item[key].trim(); break; }
-      }
-    }
-    if (!raw) return 'Consultar';
-    const num = raw.replace(/[^0-9.]/g, '');
-    if (num && !isNaN(num) && parseFloat(num) > 0) return `$${parseFloat(num).toLocaleString('es-MX')} MXN`;
-    if (!raw.toUpperCase().includes('MXN') && !raw.toUpperCase().includes('USD')) return `${raw} MXN`;
-    return raw;
-  }
-
-  function extraerTodasLasFotos(item) {
-    const fotos = [];
-    for (let i = 1; i <= 10; i++) {
-      const url = item[`foto${i}`] || item[`foto_${i}`];
-      const formateada = formatearUrlImagen(url);
-      if (formateada && formateada.length > 5) fotos.push(formateada);
-    }
-    return fotos;
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    Object.keys(SHEETS_MAPPING).forEach(categoria => cargarDatosPestana(categoria));
-    cargarCarrusel();
-    actualizarContadorLikes();
-  });
-
-  async function cargarCarrusel() {
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Carrousell`;
-    try {
-      const response = await fetch(url);
-      const csvText = await response.text();
-      const rows = parseCSV(csvText);
-
-      if (rows.length > 1) {
-        const headers = rows[0].map(h => h.trim().toLowerCase());
-        carrousellOriginal = rows.slice(1).map(row => {
-          let item = {};
-          headers.forEach((header, index) => { item[header] = row[index] ? row[index].trim() : ''; });
-          return item;
-        }).filter(item => item.titulo || item.id);
-
-        const countElem = document.getElementById('carrousell-count');
-        if (countElem) countElem.innerText = carrousellOriginal.length;
-
-        renderizarCarrusel(carrousellOriginal);
-      }
-    } catch (e) {
-      document.getElementById('carrousell-container').innerHTML = '<div class="text-slate-500 py-4 px-4">Error al cargar carrusel.</div>';
-    }
-  }
-
-  function renderizarCarrusel(items) {
-    const container = document.getElementById('carrousell-container');
-    if (!container || items.length === 0) return;
-
-    const armarCards = () => items.map((item, idx) => {
-      const fotos = extraerTodasLasFotos(item);
-      const precio = obtenerPrecioItem(item);
-      return `
-        <button type="button" onclick="abrirFichaDetallePorObjeto(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="flex items-center gap-4 p-3 bg-white border border-slate-200 rounded-xl hover:border-brand-500 hover:shadow-lg transition-all text-left w-[340px] flex-shrink-0 group">
-          <div class="w-24 h-24 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
-            ${fotos[0] ? `<img src="${fotos[0]}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />` : '<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="ph ph-image-broken text-2xl"></i></div>'}
-          </div>
-          <div class="flex-col overflow-hidden w-full">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide truncate block mb-1"><i class="ph-bold ph-map-pin mr-1"></i>${item.ubicación || item.ubicacion || 'Cancún'}</span>
-            <span class="text-sm font-bold text-slate-900 truncate block mb-1">${item.titulo || 'Destacado'}</span>
-            <span class="text-brand-600 font-extrabold text-sm block">${precio}</span>
-          </div>
-        </button>`;
-    }).join('');
-
-    // Duplicación perfecta para bucle infinito suave sin saltos
-    container.innerHTML = armarCards() + armarCards();
-  }
-
-  async function cargarDatosPestana(pestanaKey) {
-    const sheetName = SHEETS_MAPPING[pestanaKey];
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
-    try {
-      const response = await fetch(url);
-      const csvText = await response.text();
-      const rows = parseCSV(csvText);
-
-      if (rows.length > 1) {
-        const headers = rows[0].map(h => h.trim().toLowerCase());
-        const data = rows.slice(1).map(row => {
-          let item = {};
-          headers.forEach((header, index) => { item[header] = row[index] ? row[index].trim() : ''; });
-          return item;
-        }).filter(item => item.titulo || item.id);
-
-        catalogoOriginal[pestanaKey] = data;
-        const countElem = document.getElementById(`count-${pestanaKey}`);
-        if (countElem) countElem.innerText = data.length;
-
-        aplicarFiltros(pestanaKey);
-      } else {
-        aplicarFiltros(pestanaKey);
-      }
-    } catch (e) {
-      const grid = document.getElementById(`grid-${pestanaKey}`);
-      if (grid) grid.innerHTML = '<div class="col-span-full text-center py-10 text-slate-500">Error al cargar datos.</div>';
-    }
-  }
-
-  function parseCSV(text) {
-    let p = '', c = '', r = [], q = false, row = [''];
-    for (let i = 0; i < text.length; i++) {
-      c = text[i]; let next = text[i+1];
-      if (c === '"') {
-        if (q && next === '"') { row[row.length - 1] += '"'; i++; } else { q = !q; }
-      } else if (c === ',' && !q) { row.push('');
-      } else if ((c === '\r' || c === '\n') && !q) {
-        if (c === '\r' && next === '\n') i++;
-        r.push(row); row = [''];
-      } else { row[row.length - 1] += c; }
-    }
-    if (row.length > 1 || row[0] !== '') r.push(row);
-    return r;
-  }
-
-  function extraerNumero(texto) {
-    if (!texto) return 0;
-    const num = texto.toString().replace(/[^0-9.]/g, '');
-    return parseFloat(num) || 0;
-  }
-
-  function aplicarFiltros(pestana) {
-    let lista = [...catalogoOriginal[pestana]];
-    const busqueda = (document.getElementById(`search-${pestana}`)?.value || '').toLowerCase();
-    const tipo = (document.getElementById(`tipo-${pestana}`)?.value || '').toLowerCase();
-    const precioMin = parseFloat(document.getElementById(`precioMin-${pestana}`)?.value) || 0;
-    const precioMax = parseFloat(document.getElementById(`precioMax-${pestana}`)?.value) || Infinity;
-    const orden = document.getElementById(`orden-${pestana}`)?.value || 'recientes';
-
-    lista = lista.filter(item => {
-      const tit = (item.titulo || '').toLowerCase();
-      const ubi = (item.ubicación || item.ubicacion || '').toLowerCase();
-      const tip = (item.tipo || '').toLowerCase();
-      const pNum = extraerNumero(obtenerPrecioItem(item));
-
-      return (!busqueda || tit.includes(busqueda) || ubi.includes(busqueda)) &&
-             (!tipo || tip.includes(tipo)) &&
-             (pNum === 0 || (pNum >= precioMin && pNum <= precioMax));
-    });
-
-    if (orden === 'precio-desc') lista.sort((a, b) => extraerNumero(obtenerPrecioItem(b)) - extraerNumero(obtenerPrecioItem(a)));
-    else if (orden === 'precio-asc') lista.sort((a, b) => extraerNumero(obtenerPrecioItem(a)) - extraerNumero(obtenerPrecioItem(b)));
-    else if (orden === 'm2-desc') lista.sort((a, b) => extraerNumero(b.terreno) - extraerNumero(a.terreno));
-
-    catalogoFiltrado[pestana] = lista;
-    paginaActual[pestana] = 1;
-    renderizarPagina(pestana);
-  }
-
-  function cambiarPagina(pestana, delta) {
-    const totalPaginas = Math.ceil(catalogoFiltrado[pestana].length / ITEMS_POR_PAGINA) || 1;
-    paginaActual[pestana] = Math.max(1, Math.min(totalPaginas, paginaActual[pestana] + delta));
-    renderizarPagina(pestana);
-    
-    const gridContainer = document.getElementById(`grid-${pestana}`)?.parentElement;
-    if (gridContainer) gridContainer.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  function renderizarPagina(pestana) {
-    const items = catalogoFiltrado[pestana];
-    const pag = paginaActual[pestana];
-    const inicio = (pag - 1) * ITEMS_POR_PAGINA;
-    const fin = Math.min(inicio + ITEMS_POR_PAGINA, items.length);
-
-    document.getElementById(`info-paginacion-${pestana}`).innerText = `Mostrando ${items.length > 0 ? inicio + 1 : 0} a ${fin} de ${items.length} propiedades`;
-    document.getElementById(`num-pagina-${pestana}`).innerText = pag;
-    document.getElementById(`btn-prev-${pestana}`).disabled = (pag === 1);
-    document.getElementById(`btn-next-${pestana}`).disabled = (fin >= items.length);
-
-    renderizarGrid(pestana, items.slice(inicio, fin), inicio);
-  }
-
-  function navegarFotoManual(cardKey, delta, totalFotos) {
-    if (!totalFotos || totalFotos <= 1) return;
-    fotoActualIndex[cardKey] = ((fotoActualIndex[cardKey] || 0) + delta + totalFotos) % totalFotos;
-    const nuevoIndex = fotoActualIndex[cardKey];
-    
-    const imgElem = document.getElementById(`img-${cardKey}`);
-    if (imgElem && imgElem.dataset[`foto${nuevoIndex}`]) {
-      imgElem.src = imgElem.dataset[`foto${nuevoIndex}`];
-    }
-    
-    document.querySelectorAll(`.dot-${cardKey}`).forEach((dot, idx) => {
-      if(idx === nuevoIndex) dot.classList.add('is-active');
-      else dot.classList.remove('is-active');
-    });
-  }
-
-  function renderizarGrid(pestana, items, offsetIndex = 0) {
-    const grid = document.getElementById(`grid-${pestana}`);
-    if (!grid) return;
-
-    if (items.length === 0) {
-      grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 bg-white rounded-2xl border border-slate-200"><i class="ph-bold ph-magnifying-glass text-4xl text-slate-300 mb-3 block"></i><h3 class="text-lg font-bold text-slate-800">Sin resultados</h3><p>Ajusta los filtros para ver más opciones disponibles.</p></div>`;
-      return;
-    }
-
-    grid.innerHTML = items.map((item, index) => {
-      const realIndex = offsetIndex + index;
-      const cardKey = `${pestana}-${realIndex}`;
-      fotoActualIndex[cardKey] = 0;
-
-      const fotos = extraerTodasLasFotos(item);
-      const datasetFotosAttr = fotos.map((f, i) => `data-foto${i}="${f}"`).join(' ');
-      
-      const ubic = item.ubicación || item.ubicacion || 'Cancún';
-      const precioVal = obtenerPrecioItem(item);
-      const construccion = item.construcción || item.construccion;
-      const fechaPublicacion = item.fecha || item.publicacion || item.date || 'Reciente';
-      const idUnico = item.id || item.titulo;
-      const esFavorito = favoritosIds.includes(idUnico);
-      
-      let numTelefono = "529981550066";
-      if (pestana === 'Networking' && (item.telefono || item.celular || item.whatsapp)) {
-        numTelefono = (item.telefono || item.celular || item.whatsapp).replace(/[^0-9]/g, '');
-        if (numTelefono.length === 10) numTelefono = "52" + numTelefono;
-      }
-      const waMsg = encodeURIComponent(`Hola ${item.asesor || 'Edgardo'}, me interesa la propiedad:\n\n*${item.titulo || 'Propiedad'}*\n Ubicación: ${ubic}\n Precio: ${precioVal}`);
-
-      return `
-      <article class="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-brand-100/50 transition-all duration-300 overflow-hidden flex flex-col group">
-        <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">
-          ${fotos[0] ? `<img id="img-${cardKey}" src="${fotos[0]}" ${datasetFotosAttr} loading="lazy" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />` : '<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="ph ph-image-broken text-4xl"></i></div>'}
-          <span class="absolute top-3 left-3 bg-white/90 backdrop-blur text-brand-700 text-xs font-bold px-3 py-1 rounded-full shadow-sm">${item.estado || 'Disponible'}</span>
-          
-          <button type="button" onclick="toggleFavorito('${idUnico}')" class="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 backdrop-blur shadow flex items-center justify-center text-rose-500 hover:scale-110 transition-transform">
-            <i class="${esFavorito ? 'ph-fill ph-heart text-xl' : 'ph ph-heart text-xl'}"></i>
-          </button>
-
-          ${fotos.length > 1 ? `
-            <button type="button" aria-label="Anterior" onclick="navegarFotoManual('${cardKey}', -1,${fotos.length})" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-900/40 text-white flex items-center justify-center hover:bg-slate-900/80 transition-colors"><i class="ph-bold ph-caret-left"></i></button>
-            <button type="button" aria-label="Siguiente" onclick="navegarFotoManual('${cardKey}', 1,${fotos.length})" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-900/40 text-white flex items-center justify-center hover:bg-slate-900/80 transition-colors"><i class="ph-bold ph-caret-right"></i></button>
-            <div class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
-              ${fotos.map((f, fIdx) => `<span class="dot-indicator dot-${cardKey} ${fIdx === 0 ? 'is-active' : ''}"></span>`).join('')}
-            </div>
-          ` : ''}
-        </div>
-
-        <div class="p-5 flex flex-col flex-grow">
-          <div class="flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">
-            <span class="truncate"><i class="ph-bold ph-map-pin mr-1"></i>${ubic}</span>
-            <span><i class="ph-bold ph-calendar mr-1"></i>${fechaPublicacion}</span>
-          </div>
-          <h3 class="text-lg font-bold text-slate-900 leading-tight mb-2 line-clamp-1" title="${item.titulo}">${item.titulo || 'Propiedad Exclusiva'}</h3>
-          <p class="text-xl font-extrabold text-brand-600 mb-4">${precioVal}</p>
-
-          ${(item.terreno || construccion) ? `
-          <div class="flex flex-wrap gap-4 mb-4 text-xs font-medium text-slate-700">
-            ${item.terreno ? `<div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded"><i class="ph-fill ph-squares-four text-brand-500 text-base"></i> ${item.terreno}</div>` : ''}
-            ${construccion ? `<div class="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded"><i class="ph-fill ph-house-line text-brand-500 text-base"></i> ${construccion}</div>` : ''}
-          </div>` : ''}
-
-          <p class="text-sm text-slate-500 line-clamp-2 mb-4 leading-relaxed">${item.descripción || item.descripcion || 'Sin descripción detallada.'}</p>
-          
-          ${pestana === 'Networking' && item.asesor ? `<p class="text-xs font-semibold text-slate-600 mb-4 py-2 px-3 bg-slate-50 rounded-lg border border-slate-100"><i class="ph-bold ph-user-circle mr-1 text-brand-500"></i> Asesor: ${item.asesor}</p>` : ''}
-
-          <div class="mt-auto grid grid-cols-2 gap-2">
-            <button type="button" onclick="abrirFichaDetallePorObjeto(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="col-span-2 py-2.5 px-4 rounded-lg bg-slate-100 text-slate-700 font-semibold text-sm hover:bg-slate-200 transition-colors">Ver ficha completa</button>
-            <a href="https://wa.me/${numTelefono}?text=${waMsg}" target="_blank" class="py-2 px-4 rounded-lg bg-brand-600 text-white font-semibold text-sm text-center hover:bg-brand-700 transition-colors flex items-center justify-center"><i class="ph-bold ph-whatsapp-logo mr-1"></i> Chat</a>
-            <button type="button" onclick="generarFichaPDFPorObjeto(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="py-2 px-4 rounded-lg border border-slate-200 text-slate-700 font-semibold text-sm hover:bg-slate-50 transition-colors flex items-center justify-center"><i class="ph-bold ph-file-pdf mr-1"></i> PDF</button>
-          </div>
-        </div>
-      </article>`;
-    }).join('');
-  }
-
-  function abrirFichaDetalleConItem(item) {
-    const modalKey = `modal-detail-custom`;
-    fotoActualIndex[modalKey] = 0;
-
-    const fotos = extraerTodasLasFotos(item);
-    const datasetFotosAttr = fotos.map((f, i) => `data-foto${i}="${f}"`).join(' ');
-    
-    const ubic = item.ubicación || item.ubicacion || 'Cancún';
-    const precioVal = obtenerPrecioItem(item);
-    const fechaPublicacion = item.fecha || item.publicacion || item.date || 'Reciente';
-    
-    let numTelefono = "529981550066";
-    if (item.telefono || item.celular || item.whatsapp) {
-      numTelefono = (item.telefono || item.celular || item.whatsapp).replace(/[^0-9]/g, '');
-      if (numTelefono.length === 10) numTelefono = "52" + numTelefono;
-    }
-    const waMsg = encodeURIComponent(`Hola ${item.asesor || 'Edgardo'}, me interesa la propiedad:\n\n*${item.titulo || 'Propiedad'}*\n Ubicación: ${ubic}\n Precio: ${precioVal}`);
-
-    document.getElementById('contenidoDetalleUnico').innerHTML = `
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-        <div class="flex flex-col gap-4">
-          <div class="relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-sm">
-            ${fotos[0] ? `<img id="img-${modalKey}" src="${fotos[0]}" ${datasetFotosAttr} class="w-full h-full object-cover" />` : '<div class="w-full h-full flex items-center justify-center text-slate-300"><i class="ph ph-image-broken text-5xl"></i></div>'}
+            // Cálculos financieros
+            const discountAmount = propertyPrice * (presaleDiscount / 100);
+            const presaleFinalPrice = propertyPrice - discountAmount;
+            const downPaymentAmount = presaleFinalPrice * (downPaymentPercent / 100);
+            const financedAmount = presaleFinalPrice - downPaymentAmount;
+            const monthlyPayment = financedAmount / monthsTerm;
+            const estimatedNotaryAndSetup = presaleFinalPrice * 0.04; // 4% gastos notariales y apertura
+            const totalInitialInvestment = downPaymentAmount + estimatedNotaryAndSetup;
             
-            ${fotos.length > 1 ? `
-              <button type="button" onclick="navegarFotoManual('${modalKey}', -1,${fotos.length})" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 shadow-md text-slate-800 flex items-center justify-center hover:bg-white transition-colors"><i class="ph-bold ph-caret-left text-xl"></i></button>
-              <button type="button" onclick="navegarFotoManual('${modalKey}', 1,${fotos.length})" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 shadow-md text-slate-800 flex items-center justify-center hover:bg-white transition-colors"><i class="ph-bold ph-caret-right text-xl"></i></button>
-              <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-                ${fotos.map((f, fIdx) => `<span class="dot-indicator dot-${modalKey} ${fIdx === 0 ? 'is-active' : ''}"></span>`).join('')}
-              </div>
-            ` : ''}
-          </div>
+            // Plusvalía a 2 años (o plazo estimado)
+            const futureValue1Year = presaleFinalPrice * (1 + (annualAppreciation / 100));
+            const futureValue2Years = futureValue1Year * (1 + (annualAppreciation / 100));
+            const projectedAppreciation = futureValue2Years - presaleFinalPrice;
 
-          ${fotos.length > 1 ? `
-            <div class="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
-              ${fotos.map((f, fIdx) => `
-                <button type="button" onclick="navegarFotoManual('${modalKey}', ${fIdx} - (fotoActualIndex['${modalKey}'] || 0), ${fotos.length})" class="flex-shrink-0 w-24 h-20 rounded-xl overflow-hidden border-2 border-transparent focus:border-brand-500 hover:opacity-85 transition-all bg-slate-100">
-                  <img src="${f}" class="w-full h-full object-cover" loading="lazy" />
-                </button>
-              `).join('')}
-            </div>
-          ` : ''}
-        </div>
+            // Actualizar DOM visual original
+            document.getElementById('displayClientName').innerText = clientName;
+            document.getElementById('headerClientPage2').innerText = clientName;
+            document.getElementById('displayPropertyName').innerText = propertyName;
+            document.getElementById('displayPropertyLocation').innerText = propertyLocation;
+            document.getElementById('displayPropertyListPrice').innerText = formatCurrency(propertyPrice);
 
-        <div class="flex flex-col">
-          <div class="flex items-center justify-between mb-4">
-            <span class="text-sm font-semibold text-slate-500 uppercase tracking-widest"><i class="ph-bold ph-map-pin mr-1"></i>${ubic}</span>
-            <span class="bg-brand-50 text-brand-700 border border-brand-200 text-xs font-bold px-3 py-1 rounded-full shadow-sm">${item.estado || 'Disponible'}</span>
-          </div>
+            document.getElementById('presaleFinalPrice').innerText = formatCurrency(presaleFinalPrice);
+            document.getElementById('presaleSavings').innerText = formatCurrency(discountAmount);
+            document.getElementById('downPaymentAmount').innerText = formatCurrency(downPaymentAmount);
+            document.getElementById('monthlyPayment').innerText = formatCurrency(monthlyPayment);
 
-          <h2 class="text-2xl md:text-3xl font-bold text-slate-900 mb-2 leading-tight">${item.titulo || 'Propiedad Exclusiva'}</h2>
-          <p class="text-3xl md:text-4xl font-extrabold text-brand-600 mb-2">${precioVal}</p>
-          <p class="text-xs text-slate-400 font-semibold mb-8"><i class="ph-bold ph-calendar mr-1"></i> Publicado: ${fechaPublicacion}</p>
+            document.getElementById('totalInitialInvestment').innerText = formatCurrency(totalInitialInvestment);
+            document.getElementById('projectedAppreciation').innerText = formatCurrency(projectedAppreciation);
+            document.getElementById('estimatedFutureValue').innerText = formatCurrency(futureValue2Years);
+            document.getElementById('displayRoi').innerText = expectedRoi + '%';
 
-          <div class="grid grid-cols-2 gap-6 py-6 border-y border-slate-200 mb-8">
-            <div class="flex flex-col">
-              <span class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1"><i class="ph-fill ph-squares-four mr-1"></i>Terreno</span>
-              <span class="font-semibold text-slate-900 text-lg">${item.terreno || 'N/A'}</span>
-            </div>
-            <div class="flex flex-col">
-              <span class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1"><i class="ph-fill ph-house-line mr-1"></i>Construcción</span>
-              <span class="font-semibold text-slate-900 text-lg">${item.construcción || item.construccion || 'N/A'}</span>
-            </div>
-            ${item.asesor ? `
-            <div class="col-span-2 flex flex-col pt-4 border-t border-slate-100">
-              <span class="text-xs text-slate-400 font-bold uppercase tracking-wider mb-1">Asesor Encargado</span>
-              <span class="font-bold text-slate-800 flex items-center gap-2"><i class="ph-fill ph-user-circle text-brand-500 text-2xl"></i> ${item.asesor}</span>
-            </div>` : ''}
-          </div>
+            document.getElementById('currentDate').innerText = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-          <h3 class="text-lg font-bold text-slate-900 mb-3">Descripción completa</h3>
-          <div class="text-slate-600 text-sm md:text-base leading-relaxed whitespace-pre-line max-h-64 overflow-y-auto custom-scrollbar pr-4 mb-8 bg-slate-50 p-5 rounded-xl border border-slate-100">
-            ${item.descripción || item.descripcion || 'Sin descripción detallada.'}
-          </div>
+            // Actualizar diagnóstico dinámico
+            document.getElementById('diagnosticText').innerText = `El cliente ${clientName} evalúa la propiedad "${propertyName}" en ${propertyLocation}. Bajo el esquema de preventa con ${presaleDiscount}% de descuento (${formatCurrency(discountAmount)} de ahorro directo), el flujo requiere un enganche de ${formatCurrency(downPaymentAmount)} y mensualidades de ${formatCurrency(monthlyPayment)}. Con una plusvalía anual estimada del ${annualAppreciation}%, el valor proyectado a dos años asciende a ${formatCurrency(futureValue2Years)}, consolidando una recomendación de alta viabilidad y excelente retorno patrimonial.`;
 
-          <div class="mt-auto grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <a href="https://wa.me/${numTelefono}?text=${waMsg}" target="_blank" class="flex items-center justify-center gap-2 py-4 px-4 rounded-xl bg-brand-600 text-white font-bold hover:bg-brand-700 transition-all text-lg">
-              <i class="ph-bold ph-whatsapp-logo text-2xl"></i> Solicitar Info
-            </a>
-            <button type="button" onclick="generarFichaPDFPorObjeto(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="flex items-center justify-center gap-2 py-4 px-4 rounded-xl border-2 border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition-all text-lg">
-              <i class="ph-bold ph-file-pdf text-2xl"></i> Descargar PDF
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-    openModal('modalDetalleUnico');
-  }
-
-  // Generación de PDF con diseño ejecutivo superior y fotos garantizadas
-  async function generarFichaPDFPorObjeto(item) {
-    if (!item) return;
-    mostrarToast('Generando presentación PDF ejecutiva con fotos. Por favor espera...');
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-
-    const brandDark = [4, 47, 46];
-    const brandMain = [13, 148, 136];
-    const brandLight = [20, 184, 166];
-
-    const precioVal = obtenerPrecioItem(item);
-
-    // Encabezado Premium
-    doc.setFillColor(...brandDark);
-    doc.rect(0, 0, 210, 42, 'F');
-
-    doc.setTextColor(...brandLight);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text('EDGARDO DE REAL', 15, 18);
-
-    doc.setFontSize(8);
-    doc.setTextColor(240, 253, 250);
-    doc.text('RED INMOBILIARIA DE NETWORKING ESTRATEGICO', 15, 26);
-    doc.text('FICHA TECNICA EJECUTIVA', 140, 26);
-    doc.text(`Publicación: ${item.fecha || item.publicacion || 'Reciente'}`, 140, 32);
-
-    // Cuerpo Principal
-    doc.setTextColor(...brandDark);
-    doc.setFontSize(14);
-    doc.text(item.titulo || 'Propiedad Exclusiva', 15, 54);
-
-    doc.setFontSize(10);
-    doc.setTextColor(71, 85, 105);
-    doc.text(`Ubicación: ${item.ubicación || item.ubicacion || 'Cancún, Q. Roo'}`, 15, 63);
-    doc.setTextColor(...brandMain);
-    doc.text(`Precio: ${precioVal}`, 15, 70);
-    doc.setTextColor(71, 85, 105);
-    doc.text(`Terreno: ${item.terreno || 'N/A'}  |  Construcción: ${item.construcción || item.construccion || 'N/A'}`, 15, 77);
-
-    doc.setDrawColor(...brandLight);
-    doc.setLineWidth(0.5);
-    doc.line(15, 83, 195, 83);
-
-    // Descripción
-    doc.setFontSize(9);
-    doc.setTextColor(51, 65, 85);
-    doc.setFont('helvetica', 'normal');
-    const descLines = doc.splitTextToSize(item.descripción || item.descripcion || 'Propiedad verificada en RINE.', 180);
-    doc.text(descLines, 15, 91);
-
-    // Fotografías en PDF
-    const fotos = extraerTodasLasFotos(item);
-    if (fotos.length > 0) {
-      doc.addPage();
-      let yPos = 30;
-      let xPos = 15;
-
-      function renderHeaderGaleria() {
-        doc.setFillColor(...brandDark);
-        doc.rect(0, 0, 210, 20, 'F');
-        doc.setTextColor(...brandLight);
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`GALERÍA FOTOGRÁFICA — ${item.titulo || 'Propiedad'}`, 15, 13);
-      }
-
-      renderHeaderGaleria();
-
-      const imgWidth = 85;
-      const imgHeight = 58;
-
-      for (let i = 0; i < fotos.length; i++) {
-        if (yPos > 200) {
-          doc.addPage();
-          renderHeaderGaleria();
-          yPos = 30;
-          xPos = 15;
+            // Actualizar Gráfico
+            updateChart(downPaymentAmount, financedAmount, estimatedNotaryAndSetup);
         }
 
-        try {
-          const imgBase64 = await cargarImagenBase64(fotos[i]);
-          if (imgBase64) {
-            doc.addImage(imgBase64, 'JPEG', xPos, yPos, imgWidth, imgHeight);
-            if (xPos === 15) { xPos = 110; } 
-            else { xPos = 15; yPos += imgHeight + 10; }
-          }
-        } catch (err) {
-          console.log(`Error procesando foto ${i + 1} para PDF`);
+        function updateChart(downPayment, financed, expenses) {
+            const ctx = document.getElementById('financialChart').getContext('2d');
+            if (financialChartInstance) {
+                financialChartInstance.destroy();
+            }
+            financialChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Enganche', 'Financiado Meses', 'Gastos / Otros'],
+                    datasets: [{
+                        data: [downPayment, financed, expenses],
+                        backgroundColor: ['#6366f1', '#8b5cf6', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    cutout: '70%'
+                }
+            });
         }
-      }
-    }
+        
+        function openPrintModal() {
+            // Refrescar cálculos por seguridad
+            updateReport();
 
-    const totalPages = doc.internal.getNumberOfPages();
-    for (let p = 1; p <= totalPages; p++) {
-      doc.setPage(p);
-      doc.setFillColor(...brandMain);
-      doc.rect(0, 267, 210, 30, 'F');
+            // Población de datos al Modal de Proforma
+            document.getElementById('modalClientName').innerText = document.getElementById('clientName').value || 'Cliente No Especificado';
+            
+            const propName = document.getElementById('propertyName').value;
+            const propLoc = document.getElementById('propertyLocation').value;
+            document.getElementById('modalPropertyName').innerText = `${propName} (${propLoc})`;
+            
+            document.getElementById('modalPropertyListPrice').innerText = document.getElementById('displayPropertyListPrice').innerText;
+            
+            const discount = document.getElementById('presaleDiscount').value || '0';
+            document.getElementById('modalDiscountPercent').innerText = `${discount}% Desc.`;
+            document.getElementById('modalDiscountAmount').innerText = '-' + document.getElementById('presaleSavings').innerText;
+            
+            document.getElementById('modalFinalPrice').innerText = document.getElementById('presaleFinalPrice').innerText;
+            
+            const dpPercent = document.getElementById('downPaymentPercent').value || '0';
+            document.getElementById('modalDownpaymentPercent').innerText = `${dpPercent}% del Valor`;
+            document.getElementById('modalDownPayment').innerText = document.getElementById('downPaymentAmount').innerText;
+            
+            const months = document.getElementById('monthsTerm').value || '0';
+            document.getElementById('modalMonths').innerText = `${months} Mensualidades`;
+            document.getElementById('modalMonthlyPayment').innerText = document.getElementById('monthlyPayment').innerText;
+            
+            document.getElementById('modalTotalInitial').innerText = document.getElementById('totalInitialInvestment').innerText;
+            document.getElementById('modalDiagnostic').innerText = document.getElementById('diagnosticText').innerText;
+            document.getElementById('modalDate').innerText = document.getElementById('currentDate').innerText;
 
-      doc.setTextColor(...brandDark);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'bold');
-      doc.text('CONTACTO DIRECTO & RED DE ALIADOS:', 15, 277);
+            // Mostrar el modal
+            document.getElementById('printModal').classList.remove('hidden');
+            document.getElementById('printModal').classList.add('flex');
+            
+            // Prevenir scroll en el body
+            document.body.style.overflow = 'hidden';
+        }
 
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(9);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`WhatsApp: +${item.telefono || '52 998 155 0066'}  |  Instagram: @edgardodereal_`, 15, 285);
-    }
+        function closePrintModal() {
+            document.getElementById('printModal').classList.add('hidden');
+            document.getElementById('printModal').classList.remove('flex');
+            
+            // Restaurar scroll en el body
+            document.body.style.overflow = 'auto';
+        }
 
-    const filename = `Ficha_${(item.titulo || 'Propiedad').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
-    doc.save(filename);
-    mostrarToast('¡PDF ejecutivo descargado con éxito!');
-  }
-
-  function cargarImagenBase64(url) {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.crossOrigin = 'Anonymous';
-      img.onload = function () {
-        const canvas = document.createElement('canvas');
-        canvas.width = this.width;
-        canvas.height = this.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(this, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg'));
-      };
-      img.onerror = () => resolve(null);
-      img.src = url;
-    });
-  }
-</script>
-
+        window.onload = function() {
+            updateReport();
+        };
+    </script>
 </body>
 </html>
